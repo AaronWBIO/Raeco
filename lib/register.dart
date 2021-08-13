@@ -151,8 +151,8 @@ class Register extends StatelessWidget {
               textColor: Colors.white,
               fontSize: 16.0);
           progressD.hide();
-          Navigator.push(mycontext,
-              MaterialPageRoute(builder: (mycontext) => GoogleMapScreen()));
+          Navigator.push(
+              mycontext, MaterialPageRoute(builder: (mycontext) => Login()));
 
           //if error return from server, show message from server
         } else {

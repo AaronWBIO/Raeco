@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tabs/home.dart';
 
 import 'package:flutter_tabs/welcome.dart';
 

@@ -162,14 +162,13 @@ class _mapPickerEventState extends State<mapPickerEvent> {
                     child: Column(
                       children: <Widget>[
                         Container(
-                          padding: EdgeInsets.only(top: 25),
+                          padding: EdgeInsets.only(top: 10),
                           child: Text(
-                            'Seleccione la ubicación del evento dando click en el mapa',
-                            textAlign: TextAlign.center,
+                            'Seleccione la ubicación del sitio dando click en el mapa',
                             style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 18,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.black),
+                                color: Color(0xffD21D5B)),
                           ),
                         ),
                         Divider(

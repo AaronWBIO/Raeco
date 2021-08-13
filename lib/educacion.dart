@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabs/src/localStorage.dart';
 import 'package:flutter_tabs/src/sphere_bottom_navigation_bar.dart';
+import 'package:flutter_tabs/welcome.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -366,9 +367,17 @@ class _EducacionState extends State<Educacion> {
                         'assets/images/banner1.png',
                         height: 40,
                       ),
-                      Image.asset(
-                        'assets/images/banner2.png',
-                        height: 30,
+                      GestureDetector(
+                        child: Image.asset(
+                          'assets/images/banner2.png',
+                          height: 30,
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Welcome()));
+                        },
                       )
                     ],
                   ),

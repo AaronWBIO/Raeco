@@ -16,9 +16,10 @@ import 'VideoPlayerScreen.dart';
 import 'consumo_responsable.dart';
 import 'educacion.dart';
 
+import 'login.dart';
 import 'myDrawer.dart';
 
-class Login extends StatelessWidget {
+class Sugerencias extends StatelessWidget {
   localStorage storage = new localStorage();
 
   final formKey = GlobalKey<FormState>();
@@ -26,11 +27,10 @@ class Login extends StatelessWidget {
   var response;
   BuildContext mycontext;
 
-  String email = "";
-  String pass = "";
+  String sugerencia = "";
 
   String usuario = '';
-  Login() {
+  Sugerencias() {
     loadUser();
     localStorage storage = new localStorage();
     usuario = storage.getUser();
@@ -50,84 +50,59 @@ class Login extends StatelessWidget {
     if (formKey.currentState.validate()) {
       formKey.currentState.save();
 
-      sign_in();
+      enviarSugerencia();
     }
   }
 
-  Future<void> sign_in() async {
+  Future<void> enviarSugerencia() async {
     //show your own loading or progressing code here
     progressD.show();
 
-    String uploadurl = server.getUrl() + "php/users.php";
+    String uploadurl = server.getUrl() + "php/sugerencias.php";
 
-    String action = "login";
+    String action = "save";
 
-    try {
-      response = await http.post(Uri.parse(uploadurl), body: {
-        'action': action,
-        'email': email,
-        'password': pass,
-      });
+    response = await http.post(Uri.parse(uploadurl), body: {
+      'action': action,
+      'sugerencia': sugerencia,
+    });
 
-      print("RESPUESTA: " + response.body);
+    print("RESPUESTA: " + response.body);
 
-      if (response.statusCode == 200) {
-        var jsondata = json.decode(response.body); //decode json data
-        if (jsondata["message"] != "error") {
-          String nombre_app = jsondata["message"];
-          List<String> temp = nombre_app.split("-");
+    if (response.statusCode == 200) {
+      //var jsondata = json.decode(response.body); //decode json data
+      if (response.body == "ok") {
+        Fluttertoast.showToast(
+            msg: "Sugerencia enviada",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16.0);
+        progressD.hide();
 
-          String nombret = temp[0].toLowerCase();
-          nombret = nombret[0].toUpperCase() + nombret.substring(1);
+        Navigator.push(mycontext,
+            MaterialPageRoute(builder: (mycontext) => GoogleMapScreen()));
 
-          String apellidot = temp[1].toLowerCase();
-          apellidot = apellidot[0].toUpperCase() + apellidot.substring(1);
-
-          storage.guardar(nombret + " " + apellidot + '-' + temp[2]);
-          //_save(jsondata["message"]);
-          Fluttertoast.showToast(
-              msg: "Sesion iniciada",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.green,
-              textColor: Colors.white,
-              fontSize: 16.0);
-          progressD.hide();
-          Navigator.push(mycontext,
-              MaterialPageRoute(builder: (mycontext) => GoogleMapScreen()));
-
-          //if error return from server, show message from server
-        } else {
-          Fluttertoast.showToast(
-              msg: "Usuario o contraseña no válidos",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.green,
-              textColor: Colors.white,
-              fontSize: 16.0);
-        }
+        //if error return from server, show message from server
       } else {
-        print("Error during connection to server");
-        //there is error during connecting to server,
-        //status code might be 404 = url not found
+        Fluttertoast.showToast(
+            msg: "Ocurrio un error, inténtelo más tarde",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16.0);
       }
-    } catch (e) {
-      Fluttertoast.showToast(
-          msg: "Ocurrio un error, inténtelo más tarde",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
-      print("Error: " + e.toString());
-      progressD.hide();
-      //there is error during converting file image to base64 encoding.
-    } finally {
-      progressD.hide();
+    } else {
+      print("Error during connection to server");
+      //there is error during connecting to server,
+      //status code might be 404 = url not found
     }
+
+    progressD.hide();
   }
 
   @override
@@ -200,12 +175,22 @@ class Login extends StatelessWidget {
                     child: Image.asset('assets/images/bg1.png'),
                     height: 140,
                   )),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'Escribe tu sugerencia',
+                    style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xffD21D5B)),
+                  ),
                   Container(
                       margin:
-                          const EdgeInsets.only(top: 10.0, left: 20, right: 20),
+                          const EdgeInsets.only(top: 10.0, right: 20, left: 20),
                       child: TextFormField(
                         decoration: InputDecoration(
-                            labelText: "Correo electrónico:",
+                            labelText: "sugerencia:",
                             labelStyle: TextStyle(color: Colors.green),
                             enabledBorder: OutlineInputBorder(
                               borderSide: const BorderSide(
@@ -213,43 +198,21 @@ class Login extends StatelessWidget {
                               borderRadius: BorderRadius.circular(25.0),
                             )),
                         onSaved: (value) {
-                          email = value;
+                          sugerencia = value;
                         },
                         validator: (value) {
-                          if (!util.isValidEmail(value)) {
-                            return "email no valido";
+                          if (value == '') {
+                            return "Este campo es obligatorio";
                           }
                           return null;
                         },
-                      )),
-                  Container(
-                      margin:
-                          const EdgeInsets.only(top: 30.0, left: 20, right: 20),
-                      child: TextFormField(
-                        obscureText: true,
-                        obscuringCharacter: "*",
-                        decoration: InputDecoration(
-                            labelText: "Contraseña:",
-                            labelStyle: TextStyle(color: Colors.green),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.green, width: 2.0),
-                              borderRadius: BorderRadius.circular(25.0),
-                            )),
-                        onSaved: (value) {
-                          pass = value;
-                        },
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return "Debe llenar este campo";
-                          }
-                        },
+                        maxLines: 7,
                       )),
                   Container(
                       margin: const EdgeInsets.only(top: 30.0),
                       child: ElevatedButton(
                         onPressed: validar,
-                        child: Text('Ingresar'),
+                        child: Text('Enviar'),
                         style: ElevatedButton.styleFrom(
                           shape: StadiumBorder(),
                           textStyle: TextStyle(fontSize: 20),
@@ -258,50 +221,6 @@ class Login extends StatelessWidget {
                               horizontal: 80, vertical: 15),
                         ),
                       )),
-                  Container(
-                      margin: const EdgeInsets.only(top: 30.0),
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        child: Text('Recuperar contraseña'),
-                        style: ElevatedButton.styleFrom(
-                          shape: StadiumBorder(),
-                          textStyle: TextStyle(fontSize: 12),
-                          primary: Color(0xFF666666),
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 40, vertical: 8),
-                        ),
-                      )),
-                  Divider(
-                    height: 40,
-                    thickness: 3,
-                    color: Color(0xFFD31C5B),
-                  ),
-                  Text(
-                    '¿Aún no tienes cuenta?',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black),
-                  ),
-                  Container(
-                      margin: const EdgeInsets.only(top: 20.0),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Register()));
-                        },
-                        child: Text('Registrarse'),
-                        style: ElevatedButton.styleFrom(
-                          shape: StadiumBorder(),
-                          textStyle: TextStyle(fontSize: 20),
-                          primary: Color(0xFF666666),
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 60, vertical: 15),
-                        ),
-                      ))
                 ],
               ),
             ),

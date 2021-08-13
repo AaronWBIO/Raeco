@@ -9,8 +9,6 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_tabs/src/server.dart';
 
-import 'package:url_launcher/url_launcher.dart';
-
 class Welcome extends StatefulWidget {
   Welcome() : super();
 
@@ -21,6 +19,7 @@ class Welcome extends StatefulWidget {
 class _WelcomeState extends State<Welcome> {
   VideoPlayerController _controller;
   Future<void> _initializeVideoPlayerFuture;
+  bool showPlay = true;
 
   List<String> _list = [];
 
@@ -162,7 +161,16 @@ class _WelcomeState extends State<Welcome> {
                             //aspectRatio: 5 / 2,
                             aspectRatio: _controller.value.aspectRatio,
                             // Use the VideoPlayer widget to display the video.
-                            child: VideoPlayer(_controller),
+                            child: Stack(children: [
+                              VideoPlayer(_controller),
+                              Center(
+                                  child: Visibility(
+                                      visible: showPlay,
+                                      child: Image.asset(
+                                        'assets/images/icon_play.png',
+                                        width: 50,
+                                      )))
+                            ]),
                           );
                         } else {
                           // If the VideoPlayerController is still initializing, show a
@@ -176,9 +184,11 @@ class _WelcomeState extends State<Welcome> {
                         // If the video is playing, pause it.
                         if (_controller.value.isPlaying) {
                           _controller.pause();
+                          showPlay = true;
                         } else {
                           // If the video is paused, play it.
                           _controller.play();
+                          showPlay = false;
                         }
                       });
                     },

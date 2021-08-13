@@ -490,6 +490,7 @@ class _siteFormState extends State<siteForm> {
                   TextFormField(
                     decoration: InputDecoration(
                         labelText: "Nombre del local:",
+                        labelStyle: TextStyle(color: Colors.green),
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               const BorderSide(color: Colors.green, width: 2.0),
@@ -510,6 +511,7 @@ class _siteFormState extends State<siteForm> {
                   TextFormField(
                     decoration: InputDecoration(
                         labelText: "Nombre del propietario:",
+                        labelStyle: TextStyle(color: Colors.green),
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               const BorderSide(color: Colors.green, width: 2.0),
@@ -530,6 +532,7 @@ class _siteFormState extends State<siteForm> {
                   TextFormField(
                     decoration: InputDecoration(
                         labelText: "Dirección:",
+                        labelStyle: TextStyle(color: Colors.green),
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               const BorderSide(color: Colors.green, width: 2.0),
@@ -560,6 +563,7 @@ class _siteFormState extends State<siteForm> {
                     },
                     decoration: InputDecoration(
                         labelText: "País:",
+                        labelStyle: TextStyle(color: Colors.green),
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               const BorderSide(color: Colors.green, width: 2.0),
@@ -581,6 +585,7 @@ class _siteFormState extends State<siteForm> {
                     },
                     decoration: InputDecoration(
                         labelText: "Estados:",
+                        labelStyle: TextStyle(color: Colors.green),
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               const BorderSide(color: Colors.green, width: 2.0),
@@ -593,6 +598,7 @@ class _siteFormState extends State<siteForm> {
                   TextFormField(
                     decoration: InputDecoration(
                         labelText: "Breve reseña o descripción:",
+                        labelStyle: TextStyle(color: Colors.green),
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               const BorderSide(color: Colors.green, width: 2.0),
@@ -614,6 +620,7 @@ class _siteFormState extends State<siteForm> {
                   TextFormField(
                     decoration: InputDecoration(
                         labelText: "Residuos aceptados:",
+                        labelStyle: TextStyle(color: Colors.green),
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               const BorderSide(color: Colors.green, width: 2.0),
@@ -644,6 +651,7 @@ class _siteFormState extends State<siteForm> {
                     },
                     decoration: InputDecoration(
                         labelText: "Categoria:",
+                        labelStyle: TextStyle(color: Colors.green),
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               const BorderSide(color: Colors.green, width: 2.0),
@@ -656,6 +664,7 @@ class _siteFormState extends State<siteForm> {
                   TextFormField(
                     decoration: InputDecoration(
                         labelText: "Sitio web:",
+                        labelStyle: TextStyle(color: Colors.green),
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               const BorderSide(color: Colors.green, width: 2.0),
@@ -671,6 +680,7 @@ class _siteFormState extends State<siteForm> {
                   TextFormField(
                     decoration: InputDecoration(
                         labelText: "Facebook:",
+                        labelStyle: TextStyle(color: Colors.green),
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               const BorderSide(color: Colors.green, width: 2.0),
@@ -686,6 +696,7 @@ class _siteFormState extends State<siteForm> {
                   TextFormField(
                     decoration: InputDecoration(
                         labelText: "Instagram:",
+                        labelStyle: TextStyle(color: Colors.green),
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               const BorderSide(color: Colors.green, width: 2.0),
@@ -701,6 +712,7 @@ class _siteFormState extends State<siteForm> {
                   TextFormField(
                     decoration: InputDecoration(
                         labelText: "Email:",
+                        labelStyle: TextStyle(color: Colors.green),
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               const BorderSide(color: Colors.green, width: 2.0),
@@ -721,6 +733,7 @@ class _siteFormState extends State<siteForm> {
                   TextFormField(
                     decoration: InputDecoration(
                         labelText: "Télefono de contacto:",
+                        labelStyle: TextStyle(color: Colors.green),
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               const BorderSide(color: Colors.green, width: 2.0),

@@ -18,6 +18,7 @@ class Consumo_intro extends StatefulWidget {
 }
 
 class _Consumo_introState extends State<Consumo_intro> {
+  bool showPlay = true;
   VideoPlayerController _controller;
   Future<void> _initializeVideoPlayerFuture;
 
@@ -154,7 +155,16 @@ class _Consumo_introState extends State<Consumo_intro> {
                       aspectRatio: 1.5,
                       //aspectRatio: _controller.value.aspectRatio,
                       // Use the VideoPlayer widget to display the video.
-                      child: VideoPlayer(_controller),
+                      child: Stack(children: [
+                        VideoPlayer(_controller),
+                        Center(
+                            child: Visibility(
+                                visible: showPlay,
+                                child: Image.asset(
+                                  'assets/images/icon_play.png',
+                                  width: 50,
+                                )))
+                      ]),
                     );
                   } else {
                     // If the VideoPlayerController is still initializing, show a
@@ -168,9 +178,11 @@ class _Consumo_introState extends State<Consumo_intro> {
                   // If the video is playing, pause it.
                   if (_controller.value.isPlaying) {
                     _controller.pause();
+                    showPlay = true;
                   } else {
                     // If the video is paused, play it.
                     _controller.play();
+                    showPlay = false;
                   }
                 });
               },

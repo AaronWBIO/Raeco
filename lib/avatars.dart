@@ -78,14 +78,14 @@ class _AvatarsState extends State<Avatars> {
         //status code might be 404 = url not found
       }
     } catch (e) {
-      Fluttertoast.showToast(
+      /*Fluttertoast.showToast(
           msg: "Ocurrio un error, inténtelo más tarde",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.black,
           textColor: Colors.white,
-          fontSize: 16.0);
+          fontSize: 16.0);*/
       print("Error: " + e.toString());
       //progressD.hide();
       //there is error during converting file image to base64 encoding.

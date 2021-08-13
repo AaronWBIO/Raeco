@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tabs/GoogleMapScreen.dart';
 import 'package:flutter_tabs/src/localStorage.dart';
 import 'package:flutter_tabs/src/sphere_bottom_navigation_bar.dart';
+import 'package:flutter_tabs/welcome.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:progress_dialog/progress_dialog.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_tabs/src/server.dart';
@@ -27,6 +28,8 @@ class VideoPlayerScreen extends StatefulWidget {
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
+  bool showPlay = true;
+
   VideoPlayerController _controller;
   Future<void> _initializeVideoPlayerFuture;
 
@@ -174,9 +177,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                         'assets/images/banner1.png',
                         height: 40,
                       ),
-                      Image.asset(
-                        'assets/images/banner2.png',
-                        height: 30,
+                      GestureDetector(
+                        child: Image.asset(
+                          'assets/images/banner2.png',
+                          height: 30,
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Welcome()));
+                        },
                       )
                     ],
                   ),
@@ -238,7 +249,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   aspectRatio: 5 / 2,
                   //aspectRatio: _controller.value.aspectRatio,
                   // Use the VideoPlayer widget to display the video.
-                  child: VideoPlayer(_controller),
+                  child: Stack(children: [
+                    VideoPlayer(_controller),
+                    Center(
+                        child: Visibility(
+                            visible: showPlay,
+                            child: Image.asset(
+                              'assets/images/icon_play.png',
+                              width: 50,
+                            )))
+                  ]),
                 );
               } else {
                 // If the VideoPlayerController is still initializing, show a
@@ -252,9 +272,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               // If the video is playing, pause it.
               if (_controller.value.isPlaying) {
                 _controller.pause();
+                showPlay = true;
               } else {
                 // If the video is paused, play it.
                 _controller.play();
+                showPlay = false;
               }
             });
           },

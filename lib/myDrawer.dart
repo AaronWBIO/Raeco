@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabs/GoogleMapScreen.dart';
 import 'package:flutter_tabs/src/Server.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_tabs/src/localStorage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'avatars.dart';
 import 'login.dart';
 import 'mapPicker.dart';
 import 'mapPickerEvent.dart';
+import 'sugerencias.dart';
 
 class myDrawer extends StatefulWidget {
   @override
@@ -170,7 +173,10 @@ class _myDrawerState extends State<myDrawer> {
                     width: 20,
                   ),
                   title: Text('Sugerencias'),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Sugerencias()));
+                  },
                 ),
                 /*ListTile(
                   leading: Image(
@@ -199,11 +205,11 @@ class _myDrawerState extends State<myDrawer> {
                     height: 100),
                 Image(
                   image: AssetImage('assets/images/pnud_logo.png'),
-                  height: 80,
+                  height: 70,
                 ),
                 Image(
                   image: AssetImage('assets/images/banner_fab_menu.png'),
-                  height: 70,
+                  height: 60,
                 )
               ],
             )),
@@ -221,32 +227,49 @@ class _myDrawerState extends State<myDrawer> {
   }
 
   Widget AvatarImage() {
-    return Container(
-      width: 150,
-      height: 150,
-      child: null,
-      decoration: BoxDecoration(
-          image: DecorationImage(
-            image: NetworkImage(server.getUrl() + avatar_image),
-            fit: BoxFit.cover,
-          ),
-          color: Colors.white,
-          border: Border.all(color: Color(0xFF23D5D1)),
-          shape: BoxShape.circle,
-          boxShadow: [
-            //color: Colors.white, //background color of box
-            BoxShadow(
-              color: Color(0xFFBBF3F4),
-              blurRadius: 5.0, // soften the shadow
-              spreadRadius: 5.0, //extend the shadow
-              offset: Offset(
-                0.0, // Move to right 10  horizontally
-                0.0, // Move to bottom 10 Vertically
-              ),
-            )
-          ]
-          //color: Color(0xFFe0f2f1)
-          ),
+    return GestureDetector(
+      child: Container(
+        width: 150,
+        height: 150,
+        child: null,
+        decoration: BoxDecoration(
+            image: DecorationImage(
+              image: NetworkImage(server.getUrl() + avatar_image),
+              fit: BoxFit.cover,
+            ),
+            color: Colors.white,
+            border: Border.all(color: Color(0xFF23D5D1)),
+            shape: BoxShape.circle,
+            boxShadow: [
+              //color: Colors.white, //background color of box
+              BoxShadow(
+                color: Color(0xFFBBF3F4),
+                blurRadius: 5.0, // soften the shadow
+                spreadRadius: 5.0, //extend the shadow
+                offset: Offset(
+                  0.0, // Move to right 10  horizontally
+                  0.0, // Move to bottom 10 Vertically
+                ),
+              )
+            ]
+            //color: Color(0xFFe0f2f1)
+            ),
+      ),
+      onTap: () {
+        if (usuario == '') {
+          Fluttertoast.showToast(
+              msg: "Debe iniciar sesión para acceder a esta sección",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.green,
+              textColor: Colors.white,
+              fontSize: 16.0);
+        } else {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => Avatars()));
+        }
+      },
     );
   }
 }

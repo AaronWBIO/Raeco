@@ -612,6 +612,7 @@ class _EventFormState extends State<EventForm> {
                 TextFormField(
                   decoration: InputDecoration(
                       labelText: "Nombre del Evento:",
+                      labelStyle: TextStyle(color: Colors.green),
                       enabledBorder: OutlineInputBorder(
                         borderSide:
                             const BorderSide(color: Colors.green, width: 2.0),
@@ -632,6 +633,7 @@ class _EventFormState extends State<EventForm> {
                 TextFormField(
                   decoration: InputDecoration(
                       labelText: "Nombre del organizador:",
+                      labelStyle: TextStyle(color: Colors.green),
                       enabledBorder: OutlineInputBorder(
                         borderSide:
                             const BorderSide(color: Colors.green, width: 2.0),
@@ -652,6 +654,7 @@ class _EventFormState extends State<EventForm> {
                 DateTimeField(
                     decoration: InputDecoration(
                         labelText: "Fecha:",
+                        labelStyle: TextStyle(color: Colors.green),
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               const BorderSide(color: Colors.green, width: 2.0),
@@ -682,6 +685,7 @@ class _EventFormState extends State<EventForm> {
                 DateTimeField(
                     decoration: InputDecoration(
                         labelText: "Hora de inicio:",
+                        labelStyle: TextStyle(color: Colors.green),
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               const BorderSide(color: Colors.green, width: 2.0),
@@ -713,6 +717,7 @@ class _EventFormState extends State<EventForm> {
                 DateTimeField(
                     decoration: InputDecoration(
                         labelText: "Hora de fin:",
+                        labelStyle: TextStyle(color: Colors.green),
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               const BorderSide(color: Colors.green, width: 2.0),
@@ -744,6 +749,7 @@ class _EventFormState extends State<EventForm> {
                 TextFormField(
                   decoration: InputDecoration(
                       labelText: "Dirección:",
+                      labelStyle: TextStyle(color: Colors.green),
                       enabledBorder: OutlineInputBorder(
                         borderSide:
                             const BorderSide(color: Colors.green, width: 2.0),
@@ -774,6 +780,7 @@ class _EventFormState extends State<EventForm> {
                   },
                   decoration: InputDecoration(
                       labelText: "País:",
+                      labelStyle: TextStyle(color: Colors.green),
                       enabledBorder: OutlineInputBorder(
                         borderSide:
                             const BorderSide(color: Colors.green, width: 2.0),
@@ -795,6 +802,7 @@ class _EventFormState extends State<EventForm> {
                   },
                   decoration: InputDecoration(
                       labelText: "Estados:",
+                      labelStyle: TextStyle(color: Colors.green),
                       enabledBorder: OutlineInputBorder(
                         borderSide:
                             const BorderSide(color: Colors.green, width: 2.0),
@@ -807,6 +815,7 @@ class _EventFormState extends State<EventForm> {
                 TextFormField(
                   decoration: InputDecoration(
                       labelText: "Breve reseña o descripción:",
+                      labelStyle: TextStyle(color: Colors.green),
                       enabledBorder: OutlineInputBorder(
                         borderSide:
                             const BorderSide(color: Colors.green, width: 2.0),
@@ -831,6 +840,7 @@ class _EventFormState extends State<EventForm> {
                 TextFormField(
                   decoration: InputDecoration(
                       labelText: "Sitio web:",
+                      labelStyle: TextStyle(color: Colors.green),
                       enabledBorder: OutlineInputBorder(
                         borderSide:
                             const BorderSide(color: Colors.green, width: 2.0),
@@ -846,6 +856,7 @@ class _EventFormState extends State<EventForm> {
                 TextFormField(
                   decoration: InputDecoration(
                       labelText: "Facebook:",
+                      labelStyle: TextStyle(color: Colors.green),
                       enabledBorder: OutlineInputBorder(
                         borderSide:
                             const BorderSide(color: Colors.green, width: 2.0),
@@ -861,6 +872,7 @@ class _EventFormState extends State<EventForm> {
                 TextFormField(
                   decoration: InputDecoration(
                       labelText: "Instagram:",
+                      labelStyle: TextStyle(color: Colors.green),
                       enabledBorder: OutlineInputBorder(
                         borderSide:
                             const BorderSide(color: Colors.green, width: 2.0),
@@ -876,6 +888,7 @@ class _EventFormState extends State<EventForm> {
                 TextFormField(
                   decoration: InputDecoration(
                       labelText: "Email:",
+                      labelStyle: TextStyle(color: Colors.green),
                       enabledBorder: OutlineInputBorder(
                         borderSide:
                             const BorderSide(color: Colors.green, width: 2.0),
@@ -896,6 +909,7 @@ class _EventFormState extends State<EventForm> {
                 TextFormField(
                   decoration: InputDecoration(
                       labelText: "Télefono de contacto:",
+                      labelStyle: TextStyle(color: Colors.green),
                       enabledBorder: OutlineInputBorder(
                         borderSide:
                             const BorderSide(color: Colors.green, width: 2.0),

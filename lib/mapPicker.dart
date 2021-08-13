@@ -159,16 +159,14 @@ class _mapPickerState extends State<mapPicker> {
                     child: Column(
                       children: <Widget>[
                         Container(
-                          padding: EdgeInsets.only(top: 25),
-                          child: Text(
-                            'Seleccione la ubicación del sitio dando click en el mapa',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black),
-                          ),
-                        ),
+                            padding: EdgeInsets.only(top: 10),
+                            child: Text(
+                              'Seleccione la ubicación del sitio dando click en el mapa',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xffD21D5B)),
+                            )),
                         Divider(
                           height: 5,
                         ),
