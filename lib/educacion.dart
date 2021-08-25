@@ -547,7 +547,7 @@ class _EducacionState extends State<Educacion> {
                       child: FadeInImage.assetNetwork(
                           placeholder: 'assets/images/loading.gif',
                           image: getImage("${value}"),
-                          width: 80),
+                          width: 120),
                       onTap: () {
                         showInitDialog(this.mycontext, "${value}");
                       },

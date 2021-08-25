@@ -558,12 +558,39 @@ class _Consumo_ResponsableState extends State<Consumo_Responsable> {
                   // horizontal, this would produce 2 rows.
                   //childAspectRatio: 1.3,
                   //mainAxisSpacing: 0,
-                  crossAxisSpacing: 15.0,
-                  scrollDirection: Axis.vertical,
+
+                  //crossAxisSpacing: 15.0,
+                  //scrollDirection: Axis.vertical,
                   crossAxisCount: 2,
                   // Generate 100 Widgets that display their index in the List
                   children: _infographics.map((value) {
-                    return Stack(
+                    return Container(
+                        alignment: Alignment.center,
+                        margin: EdgeInsets.all(8),
+                        child: Column(
+                          children: <Widget>[
+                            Expanded(
+                                child: GestureDetector(
+                              child: FadeInImage.assetNetwork(
+                                  placeholder: 'assets/images/loading.gif',
+                                  image: getImage("${value}"),
+                                  width: 120),
+                              onTap: () {
+                                _launchURL(getFile("${value}"));
+                              },
+                            )),
+                            Text(
+                              getName("${value}"),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black),
+                            )
+                          ],
+                        ));
+                    ;
+                    /*Stack(
                       children: <Widget>[
                         GestureDetector(
                             onTap: () {
@@ -605,7 +632,7 @@ class _Consumo_ResponsableState extends State<Consumo_Responsable> {
                               child: Icon(Icons.check, color: Colors.green),
                             ))
                       ],
-                    );
+                    );*/
                   }).toList(),
                 ));
               }
