@@ -35,8 +35,8 @@ class _EventState extends State<Event> {
 
   String site_name = "Evento";
   String description = "Info";
-  String fecha = "2021-07-07";
-  String horario = "0:00";
+  String fecha = "";
+  String horario = "";
   String tag_image = "assets/images/tag_evento.png";
   String image_site = 'assets/images/image1.png';
   String image_network = server.getUrl() + "php/uploads/image1.png";
@@ -669,14 +669,16 @@ class _EventState extends State<Event> {
         margin: const EdgeInsets.only(top: 20.0, left: 10, right: 10),
         child: Row(
           children: <Widget>[
-            Text(
-              // this.site_name,
-              util.capitalize(this.site_name),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black),
+            Expanded(
+              child: Text(
+                // this.site_name,
+                util.capitalize(this.site_name),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black),
+              ),
             )
           ],
         ));

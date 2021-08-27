@@ -651,13 +651,17 @@ class _SiteState extends State<Site> {
             SizedBox(
               width: 10.0,
             ),
-            Text(
-              this.site_name,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black),
+            Expanded(
+              child: Text(
+                this.site_name + "kjjhjhhjkjjk khjkjhkjhuigggggggggggggggggggg",
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black),
+                // maxLines: 1,
+                // overflow: TextOverflow.ellipsis,
+              ),
             )
           ],
         ));
@@ -712,28 +716,24 @@ class _SiteState extends State<Site> {
   }
 
   Widget _returnTime() {
-    return horario != ''
-        ? Container(
-            margin: EdgeInsets.only(
-              top: 10,
-              left: 10,
-              right: 10,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Horario',
-                  style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black),
-                ),
-                Text(horario),
-              ],
-            ),
-          )
-        : Container();
+    return Container(
+      margin: EdgeInsets.only(
+        top: 10,
+        left: 10,
+        right: 10,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Horario',
+            style: TextStyle(
+                fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black),
+          ),
+          Text(horario),
+        ],
+      ),
+    );
   }
 
 //----------------------

@@ -372,22 +372,25 @@ class _EventFormState extends State<EventForm> {
     if (_image != null) {
       String img_status = "yes";
       pr.show();
-      File imageFile = _image;
-      String uploadURL = server.getUrl() + "php/events.php";
 
-      var stream =
-          new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
-      var length = await imageFile.length();
+      String uploadURL = server.getUrl() + "php/events.php";
 
       var uri = Uri.parse(uploadURL);
 
       var request = new http.MultipartRequest("POST", uri);
-      var multipartFile = new http.MultipartFile(
-          'uploaded_file', stream, length,
-          filename: basename(imageFile.path));
+
       //contentType: new MediaType('image', 'png'));
 
-      request.files.add(multipartFile);
+      if (_image != null) {
+        File imageFile = _image;
+        var stream =
+            new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
+        var length = await imageFile.length();
+        var multipartFile = new http.MultipartFile(
+            'uploaded_file', stream, length,
+            filename: basename(imageFile.path));
+        request.files.add(multipartFile);
+      }
 
       if (_image2 != null) {
         File imageFile2 = _image2;
