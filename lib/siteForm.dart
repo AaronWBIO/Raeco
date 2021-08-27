@@ -37,6 +37,9 @@ class _siteFormState extends State<siteForm> {
   BuildContext mycontext;
 
   File _image;
+  File _image2;
+  File _image3;
+  File _image4;
   final imagePicker = ImagePicker();
 
   ProgressDialog pr;
@@ -220,21 +223,47 @@ class _siteFormState extends State<siteForm> {
     }
   ];
 
-  Future getImage() async {
+  Future getImage(int posImage) async {
     final image = await imagePicker.getImage(source: ImageSource.gallery);
     setState(() {
-      _image = File(image.path);
+      switch (posImage) {
+        case 1:
+          _image = File(image.path);
+          break;
+        case 2:
+          _image2 = File(image.path);
+          break;
+        case 3:
+          _image3 = File(image.path);
+          break;
+        case 4:
+          _image4 = File(image.path);
+          break;
+      }
     });
   }
 
-  Future getImageCamera() async {
+  Future getImageCamera(int posImage) async {
     final image = await imagePicker.getImage(source: ImageSource.camera);
     setState(() {
-      _image = File(image.path);
+      switch (posImage) {
+        case 1:
+          _image = File(image.path);
+          break;
+        case 2:
+          _image2 = File(image.path);
+          break;
+        case 3:
+          _image3 = File(image.path);
+          break;
+        case 4:
+          _image4 = File(image.path);
+          break;
+      }
     });
   }
 
-  void _selectImageSource() async {
+  void _selectImageSource(int posImage) async {
     await showDialog(
         context: mycontext,
         builder: (BuildContext context) {
@@ -243,7 +272,7 @@ class _siteFormState extends State<siteForm> {
             children: <Widget>[
               SimpleDialogOption(
                 onPressed: () {
-                  getImageCamera();
+                  getImageCamera(posImage);
 
                   Navigator.pop(context);
                   print("camara");
@@ -254,7 +283,7 @@ class _siteFormState extends State<siteForm> {
                 onPressed: () {
                   Navigator.pop(context);
                   print("biblioteca");
-                  getImage();
+                  getImage(posImage);
                 },
                 child: const Text('Seleccionar de biblioteca'),
               ),
@@ -360,6 +389,40 @@ class _siteFormState extends State<siteForm> {
       //contentType: new MediaType('image', 'png'));
 
       request.files.add(multipartFile);
+
+      if (_image2 != null) {
+        File imageFile2 = _image2;
+        var stream2 =
+            new http.ByteStream(DelegatingStream.typed(imageFile2.openRead()));
+        var length2 = await imageFile2.length();
+        var multipartFile2 = new http.MultipartFile(
+            'uploaded_file2', stream2, length2,
+            filename: basename(imageFile2.path));
+        request.files.add(multipartFile2);
+      }
+
+      if (_image3 != null) {
+        File imageFile3 = _image3;
+        var stream3 =
+            new http.ByteStream(DelegatingStream.typed(imageFile3.openRead()));
+        var length3 = await imageFile3.length();
+        var multipartFile3 = new http.MultipartFile(
+            'uploaded_file3', stream3, length3,
+            filename: basename(imageFile3.path));
+        request.files.add(multipartFile3);
+      }
+
+      if (_image4 != null) {
+        File imageFile4 = _image4;
+        var stream4 =
+            new http.ByteStream(DelegatingStream.typed(imageFile4.openRead()));
+        var length4 = await imageFile4.length();
+        var multipartFile4 = new http.MultipartFile(
+            'uploaded_file4', stream4, length4,
+            filename: basename(imageFile4.path));
+        request.files.add(multipartFile4);
+      }
+
       request.fields['action'] = 'save';
       request.fields['cabeceras'] = cabeceras;
       request.fields['valores'] = valores;
@@ -418,7 +481,8 @@ class _siteFormState extends State<siteForm> {
     mycontext = context;
     pr = new ProgressDialog(context);
     pr.style(message: 'Espere un momento...');
-
+    double sizeImage = (MediaQuery.of(context).size.width / 4) - 15;
+    double borderRadius = 12.0;
     return Scaffold(
         appBar: PreferredSize(
             preferredSize: Size.fromHeight(kToolbarHeight),
@@ -484,6 +548,10 @@ class _siteFormState extends State<siteForm> {
                         fontWeight: FontWeight.w600,
                         color: Colors.black),
                   ),
+                  Divider(
+                    height: 25,
+                  ),
+                  _returnCarouselImage(sizeImage, borderRadius),
                   Divider(
                     height: 25,
                   ),
@@ -751,34 +819,34 @@ class _siteFormState extends State<siteForm> {
                   Divider(
                     height: 25,
                   ),
-                  Container(
-                      //show image here after choosing image
-                      child: _image == null
-                          ? Container()
-                          : //if uploadimage is null then show empty container
-                          Container(
-                              //elese show image here
-                              child: SizedBox(
-                                  height: 150,
-                                  child:
-                                      Image.file(_image) //load image from file
-                                  ))),
-                  ElevatedButton.icon(
-                      icon: Icon(
-                        Icons.folder_open,
-                        color: Colors.white,
-                        size: 24.0,
-                      ),
-                      label: Text('Seleccione una imagen'),
-                      onPressed: _selectImageSource, //getImage,
-                      style: ElevatedButton.styleFrom(
-                        shape: StadiumBorder(),
-                        textStyle: TextStyle(fontSize: 15),
-                        primary: Color(0xFF8BC540),
-                      )),
-                  Divider(
-                    height: 25,
-                  ),
+                  // Container(
+                  //     //show image here after choosing image
+                  //     child: _image == null
+                  //         ? Container()
+                  //         : //if uploadimage is null then show empty container
+                  //         Container(
+                  //             //elese show image here
+                  //             child: SizedBox(
+                  //                 height: 150,
+                  //                 child:
+                  //                     Image.file(_image) //load image from file
+                  //                 ))),
+                  // ElevatedButton.icon(
+                  //     icon: Icon(
+                  //       Icons.folder_open,
+                  //       color: Colors.white,
+                  //       size: 24.0,
+                  //     ),
+                  //     label: Text('Seleccione una imagen'),
+                  //     onPressed: _selectImageSource, //getImage,
+                  //     style: ElevatedButton.styleFrom(
+                  //       shape: StadiumBorder(),
+                  //       textStyle: TextStyle(fontSize: 15),
+                  //       primary: Color(0xFF8BC540),
+                  //     )),
+                  // Divider(
+                  //   height: 25,
+                  // ),
                   ElevatedButton(
                     onPressed: validar,
                     child: Text('Enviar'),
@@ -796,6 +864,94 @@ class _siteFormState extends State<siteForm> {
           ),
         ),
         bottomNavigationBar: _returnSphereBottomNavigationBar());
+  }
+
+  Widget _returnCarouselImage(double sizeImage, double borderRadius) {
+    return Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          GestureDetector(
+            onTap: () {
+              _selectImageSource(1);
+            },
+            child: _returnCarouselImageItem(sizeImage, borderRadius, _image),
+          ),
+          GestureDetector(
+            onTap: () {
+              _selectImageSource(2);
+            },
+            child: _returnCarouselImageItem(sizeImage, borderRadius, _image2),
+          ),
+          GestureDetector(
+            onTap: () {
+              _selectImageSource(3);
+            },
+            child: _returnCarouselImageItem(sizeImage, borderRadius, _image3),
+          ),
+          GestureDetector(
+            onTap: () {
+              _selectImageSource(4);
+            },
+            child: _returnCarouselImageItem(sizeImage, borderRadius, _image4),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _returnCarouselImageItem(
+      double sizeImage, double borderRadius, File _image) {
+    return Container(
+      width: sizeImage,
+      height: sizeImage,
+      // color: Colors.red,
+      decoration: BoxDecoration(
+        border: Border.all(width: 2, color: Colors.green),
+        borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            child: ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(borderRadius - 2)),
+              child: _image == null
+                  ? Container()
+                  : Image.file(
+                      _image,
+                      fit: BoxFit.cover,
+                      width: sizeImage - 4,
+                      height: sizeImage - 4,
+                    ),
+            ),
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            child: _image == null
+                ? Container(
+                    width: sizeImage - 4,
+                    height: sizeImage - 4,
+                    decoration: BoxDecoration(
+                      color: Color.fromRGBO(0, 0, 0, 0.2),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(borderRadius - 2),
+                      ),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
+                : Container(),
+          ),
+        ],
+      ),
+    );
   }
 
   //------------------------------------

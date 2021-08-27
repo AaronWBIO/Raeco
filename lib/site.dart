@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_tabs/site_model.dart';
 import 'package:flutter_tabs/src/sphere_bottom_navigation_bar.dart';
 
 import 'package:flutter_tabs/src/server.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 
@@ -31,8 +34,13 @@ class _SiteState extends State<Site> {
   String tag_image = "assets/images/tag_acopio.png";
   String image_profile = "assets/images/perfil_no_verificado.png";
   String image_network = server.getUrl() + "php/uploads/image1.png";
+  String image_network2 = server.getUrl() + "php/uploads/image1.png";
+  String image_network3 = server.getUrl() + "php/uploads/image1.png";
+  String image_network4 = server.getUrl() + "php/uploads/image1.png";
   String facebook = '';
+  String horario = '';
   String insta = '';
+  bool fgFirstAccess = true;
 
   String phone = '';
   _SiteState(siteName) {
@@ -42,6 +50,11 @@ class _SiteState extends State<Site> {
   void initState() {
     super.initState();
     loaded_data = loadInfo();
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      final siteModel = Provider.of<SiteModel>(context, listen: false);
+      siteModel.urlImage = '';
+    });
   }
 
   //------load info
@@ -66,8 +79,24 @@ class _SiteState extends State<Site> {
             image_profile = "assets/images/perfil_verificado.png";
           }
 
+          if (jsondata[0]['horario'] != '') {
+            horario = jsondata[0]['horario'];
+          }
+
           if (jsondata[0]['image_url'] != "") {
-            image_network = server.getUrl() + "php/" + jsondata[0]['image_url'];
+            image_network = server.getUrl() + jsondata[0]['image_url'];
+          }
+
+          if (jsondata[0]['image_url2'] != "") {
+            image_network2 = server.getUrl() + jsondata[0]['image_url2'];
+          }
+
+          if (jsondata[0]['image_url3'] != "") {
+            image_network3 = server.getUrl() + jsondata[0]['image_url3'];
+          }
+
+          if (jsondata[0]['image_url4'] != "") {
+            image_network4 = server.getUrl() + jsondata[0]['image_url4'];
           }
 
           //print("CATEGORIA: " + jsondata[0]['category']);
@@ -203,7 +232,7 @@ class _SiteState extends State<Site> {
             //Se anexó el widget stack para poder manejar las diferentes ventanas (menu principal, ventanda de estados y ventada de categorías.)
             //se dejó de utilizar el floatingActionButton para una mejor manipulación del menú
             children: [
-              getBody(),
+              getBody(context),
               Positioned(
                   left: 0,
                   bottom: 0,
@@ -392,7 +421,9 @@ class _SiteState extends State<Site> {
               textAlign: TextAlign.center),
           SizedBox(height: 15),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: selectedIcon != 'assets/images/icon_watts.png'
+                ? MainAxisAlignment.spaceEvenly
+                : MainAxisAlignment.center,
             children: <Widget>[
               SizedBox(
                 width: 20,
@@ -408,15 +439,54 @@ class _SiteState extends State<Site> {
 
               //),
               SizedBox(
-                width: 30,
+                width: selectedIcon != 'assets/images/icon_watts.png' ? 30 : 5,
               ),
-
-              Text(menuValue,
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white),
-                  textAlign: TextAlign.center),
+              selectedIcon != 'assets/images/icon_watts.png'
+                  ? Text(menuValue,
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white),
+                      textAlign: TextAlign.center)
+                  : GestureDetector(
+                      onTap: () {
+                        print('hola');
+                        if (menuValue.length < 10) {
+                          Fluttertoast.showToast(
+                            msg: "Número de teléfono no válido.",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.white,
+                            textColor: Colors.green,
+                            fontSize: 16.0,
+                          );
+                        } else {
+                          String phone = menuValue.contains('+52')
+                              ? menuValue
+                              : "+52" + menuValue;
+                          print(phone);
+                          var whatsappUrl = "whatsapp://send?phone=$phone";
+                          try {
+                            launch(whatsappUrl);
+                          } catch (ex) {}
+                        }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(25)),
+                        // width: 100.0,
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 100.0, vertical: 15.0),
+                        child: Text(menuValue,
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black),
+                            textAlign: TextAlign.center),
+                      ),
+                    ),
               SizedBox(
                 width: 20,
               ),
@@ -458,60 +528,212 @@ class _SiteState extends State<Site> {
 
 //***************************************************************** */
 
-  Widget getBody() {
-    return Column(
-      children: <Widget>[
-        SizedBox(
-          height: 10,
-        ),
-        Center(
+  Widget getBody(BuildContext context) {
+    Size screen = MediaQuery.of(context).size;
+    // if (fgFirstAccess) {
+    //   setState(() {
+    //     fgFirstAccess = false;
+    //   });
+    // }
+    return Container(
+      width: screen.width,
+      height: screen.height,
+      // color: Colors.black,
+      child: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            child: _returnImageHeader(screen.width, 200.0),
+          ),
+          Positioned(
+            // bottom: 0,
+            top: 180,
+            left: 0,
             child: Container(
-          width: MediaQuery.of(context).size.width - 20,
-          height: 150,
-          decoration: BoxDecoration(
-              color: Colors.black87,
-              //backgroundBlendMode: BlendMode.colorBurn,
-              image: DecorationImage(
-                  fit: BoxFit.fitHeight, image: NetworkImage(image_network))),
-          //child: Image.network(image_network)
-        )),
-        Container(
-            margin: const EdgeInsets.only(top: 20.0, left: 10, right: 10),
-            child: Row(
-              children: <Widget>[
-                Image.asset(
-                  'assets/images/gold_icon.png',
-                  height: 40,
+              width: screen.width,
+              height: screen.height - 420,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20.0),
+                  topRight: Radius.circular(20.0),
                 ),
+              ),
+              child: SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    returnImagesCarousel(context),
+                    // _ImageCarousel(),
+                    _returnNameSate(),
+                    _returnTags(),
+                    _returnDescription(),
+                    // _returnDescription(),
+                    // _returnDescription(),
+                    // _returnDescription(),
+                    // _returnDate(),
+                    _returnTime(),
+                    SizedBox(
+                      height: 50.0,
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _returnImageHeader(double width, double height) {
+    final siteModel = Provider.of<SiteModel>(context);
+    return Container(
+      // color: Colors.deepOrange,
+      child: ClipRRect(
+        // borderRadius: BorderRadius.all(Radius.circular(10.0)),
+        child: Image.network(
+          siteModel.urlImage != '' ? siteModel.urlImage : image_network,
+          width: width,
+          height: height,
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
+  Widget returnImagesCarousel(BuildContext context) {
+    double sizeImage = (MediaQuery.of(context).size.width / 4) - 15;
+    double borderRadius = 12.0;
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _ImageCarouselBox(
+            sizeImage: sizeImage,
+            borderRadius: borderRadius,
+            image_network: image_network,
+          ),
+          _ImageCarouselBox(
+            sizeImage: sizeImage,
+            borderRadius: borderRadius,
+            image_network: image_network2,
+          ),
+          _ImageCarouselBox(
+            sizeImage: sizeImage,
+            borderRadius: borderRadius,
+            image_network: image_network3,
+          ),
+          _ImageCarouselBox(
+            sizeImage: sizeImage,
+            borderRadius: borderRadius,
+            image_network: image_network4,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _returnNameSate() {
+    return Container(
+        margin: const EdgeInsets.only(top: 20.0, left: 10, right: 10),
+        child: Row(
+          children: <Widget>[
+            Image.asset(
+              'assets/images/gold_icon.png',
+              height: 40,
+            ),
+            SizedBox(
+              width: 10.0,
+            ),
+            Text(
+              this.site_name,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black),
+            )
+          ],
+        ));
+  }
+
+  Widget _returnTags() {
+    return Container(
+      margin: const EdgeInsets.only(top: 20.0, left: 10, right: 10),
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Image.asset(
+              tag_image,
+              height: 35.0,
+            ),
+            Image.asset(image_profile, height: 35.0)
+          ]),
+    );
+  }
+
+  Widget _returnDescription() {
+    return Container(
+      margin: const EdgeInsets.only(top: 20.0, left: 10, right: 10),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(description),
+        // child: Text(
+        //     'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.'),
+      ),
+    );
+  }
+
+  Widget _returnDate() {
+    return Container(
+      margin: EdgeInsets.only(
+        top: 10,
+        left: 10,
+        right: 10,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Fecha',
+            style: TextStyle(
+                fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black),
+          ),
+          Text('12/07/2021'),
+        ],
+      ),
+    );
+  }
+
+  Widget _returnTime() {
+    return horario != ''
+        ? Container(
+            margin: EdgeInsets.only(
+              top: 10,
+              left: 10,
+              right: 10,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
                 Text(
-                  this.site_name,
-                  textAlign: TextAlign.center,
+                  'Horario',
                   style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                       color: Colors.black),
-                )
-              ],
-            )),
-        Container(
-          margin: const EdgeInsets.only(top: 20.0, left: 10, right: 10),
-          child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Image.asset(
-                  tag_image,
-                  height: 35.0,
                 ),
-                Image.asset(image_profile, height: 35.0)
-              ]),
-        ),
-        Container(
-            margin: const EdgeInsets.only(top: 20.0, left: 10),
-            child: Align(
-                alignment: Alignment.centerLeft, child: Text(description)))
-      ],
-      // ),
-    );
+                Text(horario),
+              ],
+            ),
+          )
+        : Container();
   }
 
 //----------------------
@@ -600,6 +822,114 @@ class _SiteState extends State<Site> {
             selectedItemColor: Color(0xFFFFFF),
             title: 'Settings'),
       ],
+    );
+  }
+}
+
+class _ImageCarousel extends StatelessWidget {
+  const _ImageCarousel({Key key, this.image_network}) : super(key: key);
+  final String image_network;
+
+  @override
+  Widget build(BuildContext context) {
+    double sizeImage = (MediaQuery.of(context).size.width / 4) - 15;
+    double borderRadius = 12.0;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _ImageCarouselBox(
+            sizeImage: sizeImage,
+            borderRadius: borderRadius,
+            image_network: image_network,
+          ),
+          _ImageCarouselBox(
+            sizeImage: sizeImage,
+            borderRadius: borderRadius,
+            image_network:
+                'https://images-eu.ssl-images-amazon.com/images/I/51VpVuFELXL.jpg',
+          ),
+          _ImageCarouselBox(
+            sizeImage: sizeImage,
+            borderRadius: borderRadius,
+            image_network:
+                'https://dbdzm869oupei.cloudfront.net/img/photomural/medium/20480.jpg',
+          ),
+          _ImageCarouselBox(
+            sizeImage: sizeImage,
+            borderRadius: borderRadius,
+            image_network:
+                'https://vinilos.info/wp-content/uploads/100403-182-0.jpg',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ImageCarouselBox extends StatelessWidget {
+  const _ImageCarouselBox({
+    Key key,
+    @required this.borderRadius,
+    @required this.sizeImage,
+    @required this.image_network,
+  }) : super(key: key);
+
+  final double borderRadius;
+  final double sizeImage;
+  final String image_network;
+  @override
+  Widget build(BuildContext context) {
+    final siteModel = Provider.of<SiteModel>(context);
+    return GestureDetector(
+      onTap: () {
+        final siteModel = Provider.of<SiteModel>(context, listen: false);
+        siteModel.urlImage = this.image_network;
+      },
+      child: Container(
+        // color: Colors.deepOrange,
+        width: sizeImage,
+        height: sizeImage,
+        child: Stack(
+          children: [
+            Positioned(
+              child: ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
+                child: Image.network(
+                  image_network,
+                  width: sizeImage,
+                  height: sizeImage,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Positioned(
+              child: image_network == siteModel.urlImage
+                  ? Container(
+                      width: sizeImage,
+                      height: sizeImage,
+                      decoration: BoxDecoration(
+                        color: Color.fromRGBO(255, 255, 255, 0.4),
+                        borderRadius: BorderRadius.circular(borderRadius),
+                        border: Border.all(width: 1.5, color: Colors.green),
+                      ),
+                    )
+                  : Container(),
+            ),
+          ],
+        ),
+        // child: ClipRRect(
+        //   borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
+        //   child: Image.network(
+        //     'image_network',
+        //     width: sizeImage,
+        //     height: sizeImage,
+        //     fit: BoxFit.cover,
+        //   ),
+        // ),
+      ),
     );
   }
 }
