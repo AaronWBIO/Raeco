@@ -653,7 +653,7 @@ class _SiteState extends State<Site> {
             ),
             Expanded(
               child: Text(
-                this.site_name + "kjjhjhhjkjjk khjkjhkjhuigggggggggggggggggggg",
+                this.site_name,
                 textAlign: TextAlign.left,
                 style: TextStyle(
                     fontSize: 15,

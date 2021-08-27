@@ -30,7 +30,7 @@ class Event extends StatefulWidget {
 
 class _EventState extends State<Event> {
   //ProgressDialog progressD;
-  Future<String> loaded_data = null;
+  var loaded_data;
   var response;
 
   String site_name = "Evento";
@@ -52,6 +52,7 @@ class _EventState extends State<Event> {
   void initState() {
     super.initState();
 
+    loaded_data = null;
     loaded_data = loadInfo();
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -69,37 +70,44 @@ class _EventState extends State<Event> {
 
     String uploadurl = server.getUrl() + "php/get_points.php";
 
+    response = null;
     response = await http.post(Uri.parse(uploadurl),
         body: {'option': 'get_event_info', 'name': site_name});
 
-    if (response.statusCode == 200) {
-      var jsondata = json.decode(response.body); //decode json data
-      //print("DATOS: " + jsondata[0]['description']);
-      setState(() {
-        description = jsondata[0]['description'];
-        fecha = jsondata[0]['date'];
-        horario = jsondata[0]['time_begin'] + " - " + jsondata[0]['time_end'];
+    if (response != null) {
+      if (response.statusCode == 200) {
+        var jsondata = json.decode(response.body); //decode json data
+        //print("DATOS: " + jsondata[0]['description']);
+        setState(() {
+          if (jsondata != null) {
+            description = jsondata != null ? jsondata[0]['description'] : null;
+            fecha = jsondata[0]['date'];
+            horario = jsondata != null
+                ? jsondata[0]['time_begin'] + " - " + jsondata[0]['time_end']
+                : "";
 
-        phone = jsondata[0]['cel'];
-        if (jsondata[0]['image_url'] != "") {
-          image_network = server.getUrl() + jsondata[0]['image_url'];
-        }
+            phone = jsondata != null ? jsondata[0]['cel'] : "";
 
-        if (jsondata[0]['image_url2'] != "") {
-          image_network2 = server.getUrl() + jsondata[0]['image_url2'];
-        }
+            if (jsondata[0]['image_url'] != "") {
+              image_network = server.getUrl() + jsondata[0]['image_url'];
+            }
+            if (jsondata[0]['image_url2'] != "") {
+              image_network2 = server.getUrl() + jsondata[0]['image_url2'];
+            }
 
-        if (jsondata[0]['image_url3'] != "") {
-          image_network3 = server.getUrl() + jsondata[0]['image_url3'];
-        }
+            if (jsondata[0]['image_url3'] != "") {
+              image_network3 = server.getUrl() + jsondata[0]['image_url3'];
+            }
 
-        if (jsondata[0]['image_url4'] != "") {
-          image_network4 = server.getUrl() + jsondata[0]['image_url4'];
-        }
-        print(image_network);
+            if (jsondata[0]['image_url4'] != "") {
+              image_network4 = server.getUrl() + jsondata[0]['image_url4'];
+            }
+            print(image_network);
+          }
 
-        //print("CATEGORIA: " + server.getUrl() +"/php/"+jsondata[0]['image_url']);
-      });
+          //print("CATEGORIA: " + server.getUrl() +"/php/"+jsondata[0]['image_url']);
+        });
+      }
     } else {
       print("Error during connection to server");
     }
@@ -113,6 +121,8 @@ class _EventState extends State<Event> {
   Widget build(BuildContext context) {
     //progressD = new ProgressDialog(context);
     //progressD.style(message: 'Espere un momento...');
+    // loaded_data = null;
+    // loaded_data = loadInfo();
 
     return new Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
@@ -165,6 +175,7 @@ class _EventState extends State<Event> {
                   //color: Color(0xFFe0f2f1)
                   ))),
       body: _returnBody(),
+      // body: _loadData(),
       drawer: myDrawer(),
     );
   }
@@ -527,89 +538,6 @@ class _EventState extends State<Event> {
         ],
       ),
     );
-    // return Column(
-    //   children: <Widget>[
-    //     SizedBox(
-    //       height: 10,
-    //     ),
-    //     Center(
-    //         child: Container(
-    //       width: MediaQuery.of(context).size.width - 20,
-    //       height: 150,
-    //       decoration: BoxDecoration(
-    //           color: Colors.black87,
-    //           //backgroundBlendMode: BlendMode.colorBurn,
-    //           image: DecorationImage(
-    //               fit: BoxFit.fitHeight, image: NetworkImage(image_network))),
-    //       //child: Image.network(image_network)
-    //     )),
-    //     Padding(
-    //         padding: const EdgeInsets.all(10.0),
-    //         child: Column(children: <Widget>[
-    //           Align(
-    //               alignment: Alignment.centerLeft,
-    //               child: Container(
-    //                   margin: const EdgeInsets.only(top: 20.0),
-    //                   child: Text(
-    //                     util.capitalize(this.site_name),
-    //                     textAlign: TextAlign.left,
-    //                     style: TextStyle(
-    //                         fontSize: 15,
-    //                         fontWeight: FontWeight.w600,
-    //                         color: Colors.black),
-    //                   ))),
-    //           Container(
-    //             margin: const EdgeInsets.only(top: 20.0),
-    //             child: Row(
-    //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //                 children: <Widget>[
-    //                   Image.asset(
-    //                     tag_image,
-    //                     height: 35.0,
-    //                   ),
-    //                   //Image.asset(image_profile, height: 35.0)
-    //                 ]),
-    //           ),
-    //           Container(
-    //               margin: const EdgeInsets.only(top: 20.0),
-    //               child: Align(
-    //                   alignment: Alignment.centerLeft,
-    //                   child: Text(description))),
-    //           Row(
-    //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //               children: <Widget>[
-    //                 Container(
-    //                     margin: const EdgeInsets.only(top: 20),
-    //                     child: Text(
-    //                       "Fecha",
-    //                       style: TextStyle(fontWeight: FontWeight.bold),
-    //                     )),
-    //                 Container(
-    //                     margin: const EdgeInsets.only(top: 20),
-    //                     child: Text(
-    //                       util.dateformat(this.fecha),
-    //                       style: TextStyle(fontWeight: FontWeight.bold),
-    //                     ))
-    //               ]),
-    //           Row(
-    //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //               children: <Widget>[
-    //                 Container(
-    //                     margin: const EdgeInsets.only(top: 20),
-    //                     child: Text(
-    //                       "Horario",
-    //                       style: TextStyle(fontWeight: FontWeight.bold),
-    //                     )),
-    //                 Container(
-    //                     margin: const EdgeInsets.only(top: 20),
-    //                     child: Text(
-    //                       horario,
-    //                       style: TextStyle(fontWeight: FontWeight.bold),
-    //                     ))
-    //               ])
-    //         ])),
-    //   ],
-    // );
   }
 
   Widget _returnImageHeader(double width, double height) {
@@ -726,11 +654,26 @@ class _EventState extends State<Event> {
                 fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black),
           ),
           Text(
-            util.dateformat(this.fecha),
+            getDate(this.fecha),
           ),
         ],
       ),
     );
+  }
+
+  String getDate(String dateFrom) {
+    var date = dateFrom.replaceAll('-', "");
+
+    if (date.length == 8) {
+      var year = date.substring(0, 4);
+      var mount = date.substring(4, 6);
+      var day = date.substring(6, 8);
+
+      return day + "/" + mount + "/" + year;
+    } else
+      return dateFrom;
+
+    return "";
   }
 
   Widget _returnTime() {
