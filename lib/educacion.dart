@@ -66,26 +66,30 @@ class _EducacionState extends State<Educacion> {
 
   Future<String> loadPoints() async {
     String uploadurl = server.getUrl() + "php/education.php";
-    await _getUser();
-    List<String> temp = user.split("-");
-    String id = temp[1];
+    if (!user.isEmpty) {
+      List<String> temp = user.split("-");
+      String id = temp[1];
 
-    print('user ID: ' + id);
-    response = await http
-        .post(Uri.parse(uploadurl), body: {'action': "get_points", 'id': id});
+      print('user ID: ' + id);
+      response = await http
+          .post(Uri.parse(uploadurl), body: {'action': "get_points", 'id': id});
 
-    if (response.statusCode == 200) {
-      var jsondata = json.decode(response.body); //decode json data
-      if (jsondata["message"] != "error") {
-        points = jsondata["message"];
-        print('Puntos:' + points);
-        setState(() {});
+      if (response.statusCode == 200) {
+        var jsondata = json.decode(response.body); //decode json data
+        if (jsondata["message"] != "error") {
+          points = jsondata["message"];
+          print('Puntos:' + points);
+          setState(() {});
+        }
+      } else {
+        print("Error during connection to server");
       }
-    } else {
-      print("Error during connection to server");
-    }
 
-    return "done";
+      return "done";
+    } else {
+      points = '0';
+      return "done";
+    }
   }
 
   loadUser() async {
@@ -100,18 +104,22 @@ class _EducacionState extends State<Educacion> {
     loadUser();
     user = storage.getUser();
 
-    //--------------
     loadInfo();
-
     loadedPoints = loadPoints();
 
-    loadedAvatarInfo = loadAvatarInfo();
+    //loadedAvatarInfo = loadAvatarInfo();
+    loadedAvatarInfo = loadAvatarImage();
+    //--------------
   }
 
   _getUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    user = prefs.getString('usuario');
-    print('el usuarui es: ' + user);
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      user = prefs.getString('usuario');
+    } catch (e) {
+      user = '';
+      print('no hay usuario');
+    }
   }
 
 //----------Avatar section----------------------------
@@ -119,10 +127,9 @@ class _EducacionState extends State<Educacion> {
   List<String> avatar_list = [];
   String avatar_image = '';
 
-  Future<String> loadUserInfo() async {
+  /*Future<String> loadUserInfo() async {
     //print('-------------------------------');
     avatar_list.clear();
-    await _getUser();
 
     if (user.toString().contains('-')) {
       List<String> temp = user.split("-");
@@ -158,38 +165,76 @@ class _EducacionState extends State<Educacion> {
 
     return "done";
   }
-
-  Future<String> loadAvatarInfo() async {
-    await _getUser();
+*/
+  /*Future<String> loadAvatarInfo() async {
     await loadUserInfo();
     avatar_list.clear();
+    if (!user.isEmpty) {
+      List<String> temp = user.split("-");
 
-    List<String> temp = user.split("-");
+      String uploadurl = server.getUrl() + "php/education.php";
 
-    String uploadurl = server.getUrl() + "php/education.php";
+      response = await http.post(Uri.parse(uploadurl), body: {
+        'action': "get_avatars",
+      });
 
-    response = await http.post(Uri.parse(uploadurl), body: {
-      'action': "get_avatars",
-    });
-
-    if (response.statusCode == 200) {
-      var jsondata = json.decode(response.body); //decode json data
-      for (var i = 0; i < jsondata.length; i++) {
-        avatar_list.add(jsondata[i]['name'] +
-            "-" +
-            jsondata[i]['image'] +
-            '-' +
-            jsondata[i]['id'] +
-            '-' +
-            jsondata[i]['points']);
+      if (response.statusCode == 200) {
+        var jsondata = json.decode(response.body); //decode json data
+        for (var i = 0; i < jsondata.length; i++) {
+          avatar_list.add(jsondata[i]['name'] +
+              "-" +
+              jsondata[i]['image'] +
+              '-' +
+              jsondata[i]['id'] +
+              '-' +
+              jsondata[i]['points']);
+        }
+      } else {
+        print("Error during connection to server");
+        //there is error during connecting to server,
+        //status code might be 404 = url not found
       }
-    } else {
-      print("Error during connection to server");
-      //there is error during connecting to server,
-      //status code might be 404 = url not found
     }
 
     return 'done';
+  }
+*/
+
+  Future<String> loadAvatarImage() async {
+    //print('-------------------------------');
+    await _getUser();
+    if (user
+        .toString()
+        .contains('-')) //quiere decir que el usuario ha inciado sesión
+    {
+      List<String> temp = user.split("-");
+      String id = temp[1];
+
+      String uploadurl = server.getUrl() + "php/users.php";
+      response = await http.post(Uri.parse(uploadurl),
+          body: {'action': 'get_avatar_image', 'id': id});
+
+      if (response.statusCode == 200) {
+        var jsondata = json.decode(response.body); //decode json data
+        print('RESPUESTA: ' + jsondata["message"]);
+        if (jsondata["message"] != "error" &&
+            jsondata["message"].toString().contains('.')) {
+          avatar_image = jsondata["message"];
+          // setState(() {});
+        } else {
+          avatar_image = 'php/avatars/avatar0.png';
+          // setState(() {});
+        }
+      } else {
+        print("Error during connection to server");
+      }
+    } else {
+      print('USUARIO NO HA INICIADO SESIÓN');
+      avatar_image = 'php/avatars/avatar0.png';
+      setState(() {});
+    }
+
+    return "done";
   }
 
   String getAvatarImage() {
@@ -444,9 +489,9 @@ class _EducacionState extends State<Educacion> {
                     return CircleAvatar(
                         backgroundColor: Color(0xFF66E3E6),
                         radius: 100,
-                        backgroundImage: NetworkImage(getAvatarImage()));
+                        backgroundImage:
+                            NetworkImage(server.getUrl() + avatar_image));
                 } else {
-                  // If the VideoPlayerController is still initializing, show a
                   // loading spinner.
 
                   return Center(child: CircularProgressIndicator());

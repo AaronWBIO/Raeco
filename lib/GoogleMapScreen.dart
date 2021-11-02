@@ -207,7 +207,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
 
 //-----------------------------------------------------
   String cat = "0";
-  Future<void> loadMarkers() async {
+  Future<void> loadMarkers(String option) async {
     //show your own loading or progressing code here
 
     progressD.show();
@@ -215,7 +215,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
 
     String uploadurl = server.getUrl() + "php/get_points.php";
 
-    String option = "map";
+    //String option = "map";
 
     /*
       0 - todo
@@ -355,6 +355,111 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
     }
   }
 
+  loadMarkers2(String option) async {
+    //show your own loading or progressing code here
+
+    //progressD.show();
+    //server servidor = new server();
+
+    String uploadurl = server.getUrl() + "php/get_points.php";
+
+    try {
+      response = await http.post(Uri.parse(uploadurl), body: {
+        'option': option,
+        'category': cat,
+      });
+
+      //print("RESPUESTA: " + response.body);
+
+      if (response.statusCode == 200) {
+        var jsondata = json.decode(response.body); //decode json data
+        //print("gps: " + jsondata[i]['category']);
+        setState(() {
+          _myMarkers.clear();
+          for (var i = 0; i < jsondata.length; i++) {
+            if (jsondata[i]['category'] == "1") {
+              _myMarkers.add(Marker(
+                  markerId: MarkerId("marker_" + i.toString()),
+                  position: LatLng(double.parse(jsondata[i]['lat']),
+                      double.parse(jsondata[i]['lon'])),
+                  icon: acopio_icon,
+                  infoWindow: InfoWindow(
+                    title: jsondata[i]['business_name'],
+                  ),
+                  onTap: () {
+                    show_site(jsondata[i]['business_name']);
+                  }));
+            }
+
+            if (jsondata[i]['category'] == "2") {
+              _myMarkers.add(Marker(
+                  markerId: MarkerId("marker_" + i.toString()),
+                  position: LatLng(double.parse(jsondata[i]['lat']),
+                      double.parse(jsondata[i]['lon'])),
+                  icon: reparacion_icon,
+                  infoWindow: InfoWindow(
+                    title: jsondata[i]['business_name'],
+                  ),
+                  onTap: () {
+                    show_site(jsondata[i]['business_name']);
+                  }));
+            }
+
+            if (jsondata[i]['category'] == "3") {
+              _myMarkers.add(Marker(
+                  markerId: MarkerId("marker_" + i.toString()),
+                  position: LatLng(double.parse(jsondata[i]['lat']),
+                      double.parse(jsondata[i]['lon'])),
+                  icon: mantenimiento_icon,
+                  infoWindow: InfoWindow(
+                    title: jsondata[i]['business_name'],
+                  ),
+                  onTap: () {
+                    show_site(jsondata[i]['business_name']);
+                  }));
+            }
+            if (jsondata[i]['category'] == "4") {
+              _myMarkers.add(Marker(
+                  markerId: MarkerId("marker_" + i.toString()),
+                  position: LatLng(double.parse(jsondata[i]['lat']),
+                      double.parse(jsondata[i]['lon'])),
+                  icon: oficial_icon,
+                  infoWindow: InfoWindow(
+                    title: jsondata[i]['business_name'],
+                  ),
+                  onTap: () {
+                    show_site(jsondata[i]['business_name']);
+                  }));
+            }
+
+            if (jsondata[i]['category'] == "event") {
+              _myMarkers.add(Marker(
+                  markerId: MarkerId("marker_" + i.toString()),
+                  position: LatLng(double.parse(jsondata[i]['lat']),
+                      double.parse(jsondata[i]['lon'])),
+                  icon: evento_icon,
+                  infoWindow: InfoWindow(
+                    title: jsondata[i]['name'],
+                  ),
+                  onTap: () {
+                    show_event(jsondata[i]['name']);
+                  }));
+            }
+          }
+        });
+      } else {
+        print("Error during connection to server");
+        //there is error during connecting to server,
+        //status code might be 404 = url not found
+      }
+    } catch (e) {
+      print("Error: " + e.toString());
+      //progressD.hide();
+    } finally {
+      //progressD.hide();
+    }
+  }
+
 //-----------------------------------------------------
 
   void show_site(valor) {
@@ -380,6 +485,8 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
     super.initState();
     SetCustomMarker();
     getUserLocation();
+
+    loadMarkers2("all");
 
     loadUser();
     localStorage storage = new localStorage();
@@ -436,7 +543,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
           ),
         );
       });
-      loadMarkers();
+      loadMarkers("map");
     } else {
       Fluttertoast.showToast(
           msg: "Debe seleccionar el Estado primero",
@@ -448,7 +555,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
           fontSize: 16.0);
     }
   }
-
+/*
   void _showDialog() {
     showDialog(
         context: context,
@@ -511,7 +618,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
         },
         barrierDismissible: false);
   }
-
+*/
   /*Future<void> showInformationDialog(BuildContext context) async {
     return await showDialog(
         context: context,
@@ -1075,7 +1182,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
       centroAcopio = "Centro de acopio",
       centroReparacion = "Centro de reparación",
       sitioMantenimiento = "Sitio de mantenimiento",
-      sitioDispocisionOficial = "Sitio de dispocisión oficial",
+      sitioDispocisionOficial = "Sitio de disposición oficial",
       eventos = "Eventos";
 
   double heightContainerCat = 0.0;
@@ -1333,7 +1440,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                 markers: _myMarkers,
                 initialCameraPosition: CameraPosition(
                   target: _initialPosition,
-                  zoom: 14,
+                  zoom: 5,
                 ),
               ),
               Positioned(
@@ -1384,11 +1491,11 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
         print('Selected item is - $index');
         switch (value) {
           case 0:
-            setState(() {
+            /*setState(() {
               //heightContainer = 30.0;
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => GoogleMapScreen()));
-            });
+            });*/
             break;
           case 1:
             setState(() {
@@ -1406,24 +1513,9 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
             });
             break;
           case 3:
-            setState(() {
-              if (!usuario.toString().contains('-')) {
-                Fluttertoast.showToast(
-                    msg: "Debe iniciar sesión para acceder a esta sección",
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.CENTER,
-                    timeInSecForIosWeb: 1,
-                    backgroundColor: Colors.green,
-                    textColor: Colors.white,
-                    fontSize: 16.0);
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => Educacion()));
 
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Login()));
-              } else {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Educacion()));
-              }
-            });
             break;
           default:
         }

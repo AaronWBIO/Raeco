@@ -2,6 +2,6 @@ class server {
   String url;
 
   static String getUrl() {
-    return "https://www.plataformaciudadanacovid.com/MovidataAdmin/";
+    return "https://www.raeco.org.mx/admin/";
   }
 }

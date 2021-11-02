@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_tabs/consumo_intro.dart';
+import 'package:flutter_tabs/pdf_visor.dart';
 import 'package:flutter_tabs/src/localStorage.dart';
 import 'package:flutter_tabs/src/sphere_bottom_navigation_bar.dart';
 
@@ -576,7 +577,12 @@ class _Consumo_ResponsableState extends State<Consumo_Responsable> {
                                   image: getImage("${value}"),
                                   width: 120),
                               onTap: () {
-                                _launchURL(getFile("${value}"));
+                                //print(getFile("${value}"));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => PdfVisor(
+                                            pdf_url: getFile("{$value}"))));
                               },
                             )),
                             Text(
@@ -738,7 +744,10 @@ class _Consumo_ResponsableState extends State<Consumo_Responsable> {
               });
               break;
             case 3:
-              setState(() {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => Educacion()));
+
+              /*setState(() {
                 // heightContainer = 0.0;
                 if (!usuario.toString().contains('-')) {
                   Fluttertoast.showToast(
@@ -756,7 +765,7 @@ class _Consumo_ResponsableState extends State<Consumo_Responsable> {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => Educacion()));
                 }
-              });
+              });*/
               break;
             default:
           }

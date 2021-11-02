@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_tabs/VideoPlayerScreen.dart';
+import 'package:flutter_tabs/site_model.dart';
 import 'package:flutter_tabs/src/sphere_bottom_navigation_bar.dart';
 import 'package:flutter_tabs/src/util.dart';
 
@@ -8,6 +10,7 @@ import 'package:progress_dialog/progress_dialog.dart';
 
 import 'package:flutter_tabs/src/server.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 
@@ -27,16 +30,19 @@ class Event extends StatefulWidget {
 
 class _EventState extends State<Event> {
   //ProgressDialog progressD;
-  Future<String> loaded_data = null;
+  var loaded_data;
   var response;
 
   String site_name = "Evento";
   String description = "Info";
-  String fecha = "2021-07-07";
-  String horario = "0:00";
+  String fecha = "";
+  String horario = "";
   String tag_image = "assets/images/tag_evento.png";
   String image_site = 'assets/images/image1.png';
   String image_network = server.getUrl() + "php/uploads/image1.png";
+  String image_network2 = server.getUrl() + "php/uploads/image1.png";
+  String image_network3 = server.getUrl() + "php/uploads/image1.png";
+  String image_network4 = server.getUrl() + "php/uploads/image1.png";
   //String image_profile = "assets/images/perfil_no_verificado.png";
 
   _EventState(siteName) {
@@ -46,7 +52,13 @@ class _EventState extends State<Event> {
   void initState() {
     super.initState();
 
+    loaded_data = null;
     loaded_data = loadInfo();
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      final siteModel = Provider.of<SiteModel>(context, listen: false);
+      siteModel.urlImageEvent = '';
+    });
   }
 
   //------load info
@@ -58,25 +70,44 @@ class _EventState extends State<Event> {
 
     String uploadurl = server.getUrl() + "php/get_points.php";
 
+    response = null;
     response = await http.post(Uri.parse(uploadurl),
         body: {'option': 'get_event_info', 'name': site_name});
 
-    if (response.statusCode == 200) {
-      var jsondata = json.decode(response.body); //decode json data
-      //print("DATOS: " + jsondata[0]['description']);
-      setState(() {
-        description = jsondata[0]['description'];
-        fecha = jsondata[0]['date'];
-        horario = jsondata[0]['time_begin'] + " - " + jsondata[0]['time_end'];
+    if (response != null) {
+      if (response.statusCode == 200) {
+        var jsondata = json.decode(response.body); //decode json data
+        //print("DATOS: " + jsondata[0]['description']);
+        setState(() {
+          if (jsondata != null) {
+            description = jsondata != null ? jsondata[0]['description'] : null;
+            fecha = jsondata[0]['date'];
+            horario = jsondata != null
+                ? jsondata[0]['time_begin'] + " - " + jsondata[0]['time_end']
+                : "";
 
-        phone = jsondata[0]['cel'];
-        if (jsondata[0]['image_url'] != "") {
-          image_network = server.getUrl() + jsondata[0]['image_url'];
-        }
-        print(image_network);
+            phone = jsondata != null ? jsondata[0]['cel'] : "";
 
-        //print("CATEGORIA: " + server.getUrl() +"/php/"+jsondata[0]['image_url']);
-      });
+            if (jsondata[0]['image_url'] != "") {
+              image_network = server.getUrl() + jsondata[0]['image_url'];
+            }
+            if (jsondata[0]['image_url2'] != "") {
+              image_network2 = server.getUrl() + jsondata[0]['image_url2'];
+            }
+
+            if (jsondata[0]['image_url3'] != "") {
+              image_network3 = server.getUrl() + jsondata[0]['image_url3'];
+            }
+
+            if (jsondata[0]['image_url4'] != "") {
+              image_network4 = server.getUrl() + jsondata[0]['image_url4'];
+            }
+            print(image_network);
+          }
+
+          //print("CATEGORIA: " + server.getUrl() +"/php/"+jsondata[0]['image_url']);
+        });
+      }
     } else {
       print("Error during connection to server");
     }
@@ -90,6 +121,8 @@ class _EventState extends State<Event> {
   Widget build(BuildContext context) {
     //progressD = new ProgressDialog(context);
     //progressD.style(message: 'Espere un momento...');
+    // loaded_data = null;
+    // loaded_data = loadInfo();
 
     return new Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
@@ -142,6 +175,7 @@ class _EventState extends State<Event> {
                   //color: Color(0xFFe0f2f1)
                   ))),
       body: _returnBody(),
+      // body: _loadData(),
       drawer: myDrawer(),
     );
   }
@@ -347,7 +381,9 @@ class _EventState extends State<Event> {
               textAlign: TextAlign.center),
           SizedBox(height: 15),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: selectedIcon != 'assets/images/icon_watts.png'
+                ? MainAxisAlignment.spaceEvenly
+                : MainAxisAlignment.center,
             children: <Widget>[
               SizedBox(
                 width: 20,
@@ -363,15 +399,54 @@ class _EventState extends State<Event> {
 
               //),
               SizedBox(
-                width: 30,
+                width: selectedIcon != 'assets/images/icon_watts.png' ? 30 : 5,
               ),
-
-              Text(menuValue,
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white),
-                  textAlign: TextAlign.center),
+              selectedIcon != 'assets/images/icon_watts.png'
+                  ? Text(menuValue,
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white),
+                      textAlign: TextAlign.center)
+                  : GestureDetector(
+                      onTap: () {
+                        print('hola');
+                        if (menuValue.length < 10) {
+                          Fluttertoast.showToast(
+                            msg: "Número de teléfono no válido.",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.white,
+                            textColor: Colors.green,
+                            fontSize: 16.0,
+                          );
+                        } else {
+                          String phone = menuValue.contains('+52')
+                              ? menuValue
+                              : "+52" + menuValue;
+                          print(phone);
+                          var whatsappUrl = "whatsapp://send?phone=$phone";
+                          try {
+                            launch(whatsappUrl);
+                          } catch (ex) {}
+                        }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(25)),
+                        // width: 100.0,
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 100.0, vertical: 15.0),
+                        child: Text(menuValue,
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black),
+                            textAlign: TextAlign.center),
+                      ),
+                    ),
               SizedBox(
                 width: 20,
               ),
@@ -414,88 +489,211 @@ class _EventState extends State<Event> {
 //***************************************************************** */
 
   Widget getBody() {
-    return Column(
-      children: <Widget>[
-        SizedBox(
-          height: 10,
-        ),
-        Center(
+    Size screen = MediaQuery.of(context).size;
+    return Container(
+      width: screen.width,
+      height: screen.height,
+      child: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            child: _returnImageHeader(screen.width, 200.0),
+          ),
+          Positioned(
+            top: 180.0,
+            left: 0,
             child: Container(
-          width: MediaQuery.of(context).size.width - 20,
-          height: 150,
-          decoration: BoxDecoration(
-              color: Colors.black87,
-              //backgroundBlendMode: BlendMode.colorBurn,
-              image: DecorationImage(
-                  fit: BoxFit.fitHeight, image: NetworkImage(image_network))),
-          //child: Image.network(image_network)
-        )),
-        Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(children: <Widget>[
-              Align(
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                      margin: const EdgeInsets.only(top: 20.0),
-                      child: Text(
-                        util.capitalize(this.site_name),
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black),
-                      ))),
-              Container(
-                margin: const EdgeInsets.only(top: 20.0),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Image.asset(
-                        tag_image,
-                        height: 35.0,
-                      ),
-                      //Image.asset(image_profile, height: 35.0)
-                    ]),
+              width: screen.width,
+              height: screen.height - 420,
+              // color: Colors.amberAccent,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20.0),
+                  topRight: Radius.circular(20.0),
+                ),
               ),
-              Container(
-                  margin: const EdgeInsets.only(top: 20.0),
-                  child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(description))),
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Container(
-                        margin: const EdgeInsets.only(top: 20),
-                        child: Text(
-                          "Fecha",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        )),
-                    Container(
-                        margin: const EdgeInsets.only(top: 20),
-                        child: Text(
-                          util.dateformat(this.fecha),
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ))
-                  ]),
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Container(
-                        margin: const EdgeInsets.only(top: 20),
-                        child: Text(
-                          "Horario",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        )),
-                    Container(
-                        margin: const EdgeInsets.only(top: 20),
-                        child: Text(
-                          horario,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ))
-                  ])
-            ])),
-      ],
+              child: SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    returnImagesCarousel(context),
+                    _returnNameEvent(),
+                    _returnTags(),
+                    _returnDescription(),
+                    _returnDate(),
+                    _returnTime(),
+                    SizedBox(
+                      height: 50.0,
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _returnImageHeader(double width, double height) {
+    final siteModel = Provider.of<SiteModel>(context);
+    return Container(
+      // color: Colors.deepOrange,
+      child: ClipRRect(
+        // borderRadius: BorderRadius.all(Radius.circular(10.0)),
+        child: Image.network(
+          siteModel.urlImageEvent != ''
+              ? siteModel.urlImageEvent
+              : image_network,
+          // 'https://neilpatel.com/wp-content/uploads/2017/09/image-editing-tools.jpg',
+          width: width,
+          height: height,
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
+  Widget returnImagesCarousel(BuildContext context) {
+    double sizeImage = (MediaQuery.of(context).size.width / 4) - 15;
+    double borderRadius = 12.0;
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _ImageCarouselBox(
+            sizeImage: sizeImage,
+            borderRadius: borderRadius,
+            image_network: image_network,
+          ),
+          _ImageCarouselBox(
+            sizeImage: sizeImage,
+            borderRadius: borderRadius,
+            image_network: image_network2,
+          ),
+          _ImageCarouselBox(
+            sizeImage: sizeImage,
+            borderRadius: borderRadius,
+            image_network: image_network3,
+          ),
+          _ImageCarouselBox(
+            sizeImage: sizeImage,
+            borderRadius: borderRadius,
+            image_network: image_network4,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _returnNameEvent() {
+    return Container(
+        margin: const EdgeInsets.only(top: 20.0, left: 10, right: 10),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Text(
+                // this.site_name,
+                util.capitalize(this.site_name),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black),
+              ),
+            )
+          ],
+        ));
+  }
+
+  Widget _returnTags() {
+    return Container(
+      margin: const EdgeInsets.only(top: 20.0, left: 10, right: 10),
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Image.asset(
+              tag_image,
+              height: 35.0,
+            ),
+          ]),
+    );
+  }
+
+  Widget _returnDescription() {
+    return Container(
+      margin: const EdgeInsets.only(top: 20.0, left: 10, right: 10),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(description),
+        // child: Text(
+        //     'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.'),
+      ),
+    );
+  }
+
+  Widget _returnDate() {
+    return Container(
+      margin: EdgeInsets.only(
+        top: 10,
+        left: 10,
+        right: 10,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Fecha',
+            style: TextStyle(
+                fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black),
+          ),
+          Text(
+            getDate(this.fecha),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String getDate(String dateFrom) {
+    var date = dateFrom.replaceAll('-', "");
+
+    if (date.length == 8) {
+      var year = date.substring(0, 4);
+      var mount = date.substring(4, 6);
+      var day = date.substring(6, 8);
+
+      return day + "/" + mount + "/" + year;
+    } else
+      return dateFrom;
+
+    return "";
+  }
+
+  Widget _returnTime() {
+    return Container(
+      margin: EdgeInsets.only(
+        top: 10,
+        left: 10,
+        right: 10,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Horario',
+            style: TextStyle(
+                fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black),
+          ),
+          Text(horario),
+        ],
+      ),
     );
   }
 
@@ -537,11 +735,15 @@ class _EventState extends State<Event> {
               });
               break;
             case 3:
+            Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Educacion()));
+
+            /*
               setState(() {
                 // heightContainer = 0.0;
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => Educacion()));
-              });
+              });*/
               break;
             default:
           }
@@ -585,6 +787,71 @@ class _EventState extends State<Event> {
             selectedItemColor: Color(0xFFFFFFFF),
             title: 'Settings'),
       ],
+    );
+  }
+}
+
+class _ImageCarouselBox extends StatelessWidget {
+  const _ImageCarouselBox({
+    Key key,
+    @required this.borderRadius,
+    @required this.sizeImage,
+    @required this.image_network,
+  }) : super(key: key);
+
+  final double borderRadius;
+  final double sizeImage;
+  final String image_network;
+  @override
+  Widget build(BuildContext context) {
+    final siteModel = Provider.of<SiteModel>(context);
+    return GestureDetector(
+      onTap: () {
+        final siteModel = Provider.of<SiteModel>(context, listen: false);
+        siteModel.urlImageEvent = this.image_network;
+      },
+      child: Container(
+        // color: Colors.deepOrange,
+        width: sizeImage,
+        height: sizeImage,
+        child: Stack(
+          children: [
+            Positioned(
+              child: ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
+                child: Image.network(
+                  image_network,
+                  width: sizeImage,
+                  height: sizeImage,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Positioned(
+              child: image_network == siteModel.urlImageEvent
+                  ? Container(
+                      width: sizeImage,
+                      height: sizeImage,
+                      decoration: BoxDecoration(
+                        color: Color.fromRGBO(255, 255, 255, 0.4),
+                        borderRadius: BorderRadius.circular(borderRadius),
+                        border: Border.all(width: 1.5, color: Colors.green),
+                      ),
+                    )
+                  : Container(),
+            ),
+          ],
+        ),
+        // child: ClipRRect(
+        //   borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
+        //   child: Image.network(
+        //     'image_network',
+        //     width: sizeImage,
+        //     height: sizeImage,
+        //     fit: BoxFit.cover,
+        //   ),
+        // ),
+      ),
     );
   }
 }

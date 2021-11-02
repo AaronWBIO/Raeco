@@ -203,7 +203,7 @@ class _Consumo_introState extends State<Consumo_intro> {
                 child: Container(
                     margin: const EdgeInsets.only(top: 15.0),
                     child: Text(
-                      'El cuidado del medio ambiente es responsabilidad de todos, y aunque vivimos en una sociedad que incentiva el consumo, es importante formarnos un carácter crítico y consiente sobre nuestro consumo.\nEn esta sección encontrarás una serie de infografías con información interesante para tener un consumo responsable, consiente y ambientalmente sustentable.',
+                      'El cuidado del medio ambiente es responsabilidad de todos, y aunque vivimos en una sociedad que incentiva el consumo, es importante formarnos un carácter crítico y consciente sobre nuestro consumo.\nEn esta sección encontrarás una serie de infografías con información interesante para tener un consumo responsable, consiente y ambientalmente sustentable.',
                       style: TextStyle(fontSize: 12, color: Colors.black),
                     ))),
             Center(

@@ -69,5 +69,5 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-    </application>
+    </application>com.example.flutter_tabs
 </manifest>

@@ -334,7 +334,10 @@ class Login extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => Consumo_Responsable()));
             break;
           case 3:
-            if (!usuario.toString().contains('-')) {
+
+           Navigator.push(mycontext,
+                    MaterialPageRoute(builder: (context) => Educacion()));
+            /*if (!usuario.toString().contains('-')) {
               Fluttertoast.showToast(
                   msg: "Debe iniciar sesión para acceder a esta sección",
                   toastLength: Toast.LENGTH_SHORT,
@@ -349,7 +352,7 @@ class Login extends StatelessWidget {
             } else {
               Navigator.push(mycontext,
                   MaterialPageRoute(builder: (context) => Educacion()));
-            }
+            }*/
             break;
           default:
         }

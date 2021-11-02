@@ -252,11 +252,14 @@ class _mapPickerEventState extends State<mapPickerEvent> {
               });
               break;
             case 3:
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => Educacion()));
+              /*
               setState(() {
                 // heightContainer = 0.0;
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => Educacion()));
-              });
+              });*/
               break;
             default:
           }

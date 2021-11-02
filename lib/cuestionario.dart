@@ -116,24 +116,40 @@ class _CuestionarioState extends State<Cuestionario> {
     String uploadurl = server.getUrl() + "php/education.php";
 
     await _getUser();
-    List<String> temp = user.split("-");
-    String id = temp[1];
-    //points--;
-    response = await http.post(Uri.parse(uploadurl),
-        body: {'action': "save_points", 'id': id, 'points': points.toString()});
 
-    if (response.statusCode == 200) {
-      var jsondata = json.decode(response.body); //decode json data
-      //print('Respuesta: ' + response.body);
-      if (jsondata["message"] != "error") {
-        //Navigator.of(context).pop();
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Avatars()));
-        print('Puntos guardados');
+    if (user != null) {
+      List<String> temp = user.split("-");
+      String id = temp[1];
+      //points--;
+      response = await http.post(Uri.parse(uploadurl), body: {
+        'action': "save_points",
+        'id': id,
+        'points': points.toString()
+      });
+
+      if (response.statusCode == 200) {
+        var jsondata = json.decode(response.body); //decode json data
+        //print('Respuesta: ' + response.body);
+        if (jsondata["message"] != "error") {
+          //Navigator.of(context).pop();
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => Avatars()));
+          print('Puntos guardados');
+        }
+      } else {
+        print("Error during connection to server");
       }
     } else {
-      print("Error during connection to server");
+      Fluttertoast.showToast(
+          msg: "Debes iniciar sesión para guardar tus puntos",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0);
     }
+
     return 'done';
   }
 
@@ -425,224 +441,229 @@ class _CuestionarioState extends State<Cuestionario> {
   }
 
   Widget getContent() {
-    return Column(
-      children: [
-        Container(
-            margin: const EdgeInsets.only(top: 30.0, left: 10, right: 10),
-            child: Container(
+    return Container(
+        child: SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+              margin: const EdgeInsets.only(top: 10.0, left: 10, right: 10),
+              child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Color(0xFFE5E5E5),
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(10))),
+                  child: Text(title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                      textAlign: TextAlign.center))),
+          Center(
+              child: Container(
+            margin: const EdgeInsets.only(top: 10.0, left: 10, right: 10),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: Container(
                 width: MediaQuery.of(context).size.width,
+                height: 230,
                 decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Color(0xFFE5E5E5),
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(10))),
-                child: Text(title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
-                    textAlign: TextAlign.center))),
-        Center(
-            child: Container(
-          margin: const EdgeInsets.only(top: 30.0, left: 10, right: 10),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20.0),
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              height: 250,
-              decoration: BoxDecoration(
-                  color: Colors.black87,
-                  //backgroundBlendMode: BlendMode.colorBurn,
-                  image: DecorationImage(
-                      fit: BoxFit.fitWidth,
-                      image: NetworkImage(getImage(_list[indexList])))),
-              //child: Image.network(image_network)
-            ),
-          ),
-        )),
-        Container(
-          margin: const EdgeInsets.only(top: 30.0, left: 10, right: 10),
-          child: Text(getQuestion(_list[indexList]),
-              style: TextStyle(
-                fontSize: 14,
+                    color: Colors.black87,
+                    //backgroundBlendMode: BlendMode.colorBurn,
+                    image: DecorationImage(
+                        fit: BoxFit.fitWidth,
+                        image: NetworkImage(getImage(_list[indexList])))),
+                //child: Image.network(image_network)
               ),
-              textAlign: TextAlign.center),
-        ),
-        SizedBox(
-          height: 30,
-        ),
-        Container(
-            margin: const EdgeInsets.only(left: 10, right: 10),
-            child: Table(
-              /*defaultColumnWidth:
+            ),
+          )),
+          Container(
+            margin: const EdgeInsets.only(top: 10.0, left: 10, right: 10),
+            child: Text(getQuestion(_list[indexList]),
+                style: TextStyle(
+                  fontSize: 14,
+                ),
+                textAlign: TextAlign.center),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Container(
+              margin: const EdgeInsets.only(left: 10, right: 10),
+              child: Table(
+                /*defaultColumnWidth:
               FixedColumnWidth(MediaQuery.of(context).size.width / 2 - 10),*/
-              columnWidths: {
-                0: FlexColumnWidth(4),
-                1: FlexColumnWidth(0.5),
-                2: FlexColumnWidth(4),
-              },
-              children: [
-                TableRow(children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        color1 = activeColor;
-                        color2 = normalColor;
-                        color3 = normalColor;
-                        color4 = normalColor;
-
-                        selected = 1;
-
-                        currentPoints = getPoints(_list[indexList], 1);
-                      });
-                    },
-                    child: Text(getOption1(_list[indexList])),
-                    style: ElevatedButton.styleFrom(
-                      shape: StadiumBorder(),
-                      textStyle: TextStyle(fontSize: 12),
-                      primary: Color(color1),
-                      //padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        color1 = normalColor;
-                        color2 = activeColor;
-                        color3 = normalColor;
-                        color4 = normalColor;
-
-                        selected = 1;
-
-                        currentPoints = getPoints(_list[indexList], 2);
-                      });
-                    },
-                    child: Text(getOption2(_list[indexList])),
-                    style: ElevatedButton.styleFrom(
-                      shape: StadiumBorder(),
-                      textStyle: TextStyle(fontSize: 12),
-                      primary: Color(color2),
-                    ),
-                  ),
-                ]),
-                TableRow(children: [
-                  SizedBox(
-                    height: 15,
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  SizedBox(
-                    height: 15,
-                  )
-                ]),
-                TableRow(children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        color1 = normalColor;
-                        color2 = normalColor;
-                        color3 = activeColor;
-                        color4 = normalColor;
-
-                        selected = 1;
-
-                        currentPoints = getPoints(_list[indexList], 3);
-                      });
-                    },
-                    child: Text(getOption3(_list[indexList])),
-                    style: ElevatedButton.styleFrom(
-                      shape: StadiumBorder(),
-                      textStyle: TextStyle(fontSize: 12),
-                      primary: Color(color3),
-                      //padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        color1 = normalColor;
-                        color2 = normalColor;
-                        color3 = normalColor;
-                        color4 = activeColor;
-
-                        selected = 1;
-
-                        currentPoints = getPoints(_list[indexList], 4);
-                      });
-                    },
-                    child: Text(getOption4(_list[indexList])),
-                    style: ElevatedButton.styleFrom(
-                      shape: StadiumBorder(),
-                      textStyle: TextStyle(fontSize: 12),
-                      primary: Color(color4),
-                      //padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                    ),
-                  ),
-                ]),
-              ],
-            )),
-        Expanded(
-            child: Container(
-                margin: const EdgeInsets.only(bottom: 30.0),
-                alignment: Alignment.bottomCenter,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (selected == 1) {
-                      points += currentPoints;
-                      Fluttertoast.showToast(
-                          msg: "Conseguiste " +
-                              currentPoints.toString() +
-                              ' Reciclacoins',
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.CENTER,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.green,
-                          textColor: Colors.white,
-                          fontSize: 16.0);
-
-                      color1 = normalColor;
-                      color2 = normalColor;
-                      color3 = normalColor;
-                      color4 = normalColor;
-
-                      if (bText == 'Terminar') {
-                        _showDialogEnd(context);
-                      }
-
-                      int t = indexList;
-                      if (t++ < _list.length - 1) {
+                columnWidths: {
+                  0: FlexColumnWidth(4),
+                  1: FlexColumnWidth(0.5),
+                  2: FlexColumnWidth(4),
+                },
+                children: [
+                  TableRow(children: [
+                    ElevatedButton(
+                      onPressed: () {
                         setState(() {
-                          indexList++;
+                          color1 = activeColor;
+                          color2 = normalColor;
+                          color3 = normalColor;
+                          color4 = normalColor;
+
+                          selected = 1;
+
+                          currentPoints = getPoints(_list[indexList], 1);
                         });
-                      }
-                      if (t == _list.length - 1) {
-                        bText = 'Terminar';
-                      }
-                    } else {
-                      Fluttertoast.showToast(
-                          msg: 'Debe seleccionar una opción',
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.CENTER,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.green,
-                          textColor: Colors.white,
-                          fontSize: 16.0);
+                      },
+                      child: Text(getOption1(_list[indexList])),
+                      style: ElevatedButton.styleFrom(
+                        shape: StadiumBorder(),
+                        textStyle: TextStyle(fontSize: 12),
+                        primary: Color(color1),
+                        //padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          color1 = normalColor;
+                          color2 = activeColor;
+                          color3 = normalColor;
+                          color4 = normalColor;
+
+                          selected = 1;
+
+                          currentPoints = getPoints(_list[indexList], 2);
+                        });
+                      },
+                      child: Text(getOption2(_list[indexList])),
+                      style: ElevatedButton.styleFrom(
+                        shape: StadiumBorder(),
+                        textStyle: TextStyle(fontSize: 12),
+                        primary: Color(color2),
+                      ),
+                    ),
+                  ]),
+                  TableRow(children: [
+                    SizedBox(
+                      height: 15,
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    SizedBox(
+                      height: 15,
+                    )
+                  ]),
+                  TableRow(children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          color1 = normalColor;
+                          color2 = normalColor;
+                          color3 = activeColor;
+                          color4 = normalColor;
+
+                          selected = 1;
+
+                          currentPoints = getPoints(_list[indexList], 3);
+                        });
+                      },
+                      child: Text(getOption3(_list[indexList])),
+                      style: ElevatedButton.styleFrom(
+                        shape: StadiumBorder(),
+                        textStyle: TextStyle(fontSize: 12),
+                        primary: Color(color3),
+                        //padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          color1 = normalColor;
+                          color2 = normalColor;
+                          color3 = normalColor;
+                          color4 = activeColor;
+
+                          selected = 1;
+
+                          currentPoints = getPoints(_list[indexList], 4);
+                        });
+                      },
+                      child: Text(getOption4(_list[indexList])),
+                      style: ElevatedButton.styleFrom(
+                        shape: StadiumBorder(),
+                        textStyle: TextStyle(fontSize: 12),
+                        primary: Color(color4),
+                        //padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                      ),
+                    ),
+                  ]),
+                ],
+              )),
+          SizedBox(
+            height: 20,
+          ),
+          Container(
+              margin: const EdgeInsets.only(bottom: 30.0),
+              alignment: Alignment.bottomCenter,
+              child: ElevatedButton(
+                onPressed: () {
+                  if (selected == 1) {
+                    points += currentPoints;
+                    Fluttertoast.showToast(
+                        msg: "Conseguiste " +
+                            currentPoints.toString() +
+                            ' Reciclacoins',
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.green,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
+
+                    color1 = normalColor;
+                    color2 = normalColor;
+                    color3 = normalColor;
+                    color4 = normalColor;
+
+                    if (bText == 'Terminar') {
+                      _showDialogEnd(context);
                     }
-                    selected = 0;
-                  },
-                  child: Text(bText),
-                  style: ElevatedButton.styleFrom(
-                    shape: StadiumBorder(),
-                    textStyle: TextStyle(fontSize: 14),
-                    primary: Color(activeColor),
-                    padding: EdgeInsets.symmetric(horizontal: 50),
-                  ),
-                )))
-      ],
-    );
+
+                    int t = indexList;
+                    if (t++ < _list.length - 1) {
+                      setState(() {
+                        indexList++;
+                      });
+                    }
+                    if (t == _list.length - 1) {
+                      bText = 'Terminar';
+                    }
+                  } else {
+                    Fluttertoast.showToast(
+                        msg: 'Debe seleccionar una opción',
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.green,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
+                  }
+                  selected = 0;
+                },
+                child: Text(bText),
+                style: ElevatedButton.styleFrom(
+                  shape: StadiumBorder(),
+                  textStyle: TextStyle(fontSize: 14),
+                  primary: Color(activeColor),
+                  padding: EdgeInsets.symmetric(horizontal: 50),
+                ),
+              ))
+        ],
+      ),
+    ));
   }
 
   //----------------------

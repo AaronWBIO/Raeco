@@ -1,93 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tabs/siteForm.dart';
 import 'package:flutter_tabs/src/sphere_bottom_navigation_bar.dart';
 import 'package:flutter_tabs/src/util.dart';
-
-import 'package:geolocator/geolocator.dart';
-
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:progress_dialog/progress_dialog.dart';
-
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'GoogleMapScreen.dart';
 import 'VideoPlayerScreen.dart';
 import 'consumo_responsable.dart';
 import 'educacion.dart';
-
 import 'myDrawer.dart';
+import 'package:advance_pdf_viewer/advance_pdf_viewer.dart';
 
-class mapPicker extends StatefulWidget {
+class PdfVisor extends StatefulWidget {
+  final String pdf_url;
+  PdfVisor({Key key, @required this.pdf_url}) : super(key: key);
+
   @override
-  _mapPickerState createState() => _mapPickerState();
+  _PdfVisorState createState() => _PdfVisorState(pdf_url);
 }
 
-class _mapPickerState extends State<mapPicker> {
-  //int index = 0;
-
-  ProgressDialog pr;
-
-  Set<Marker> _myMarkers = {};
-
-  GoogleMapController mapController;
-  LatLng _initialPosition;
-  Geolocator geolocator = Geolocator();
-
-  String punto;
-
-  _setMarker(LatLng point) {
-    punto = point.latitude.toString() + "," + point.longitude.toString();
-    _myMarkers.clear();
-    setState(() {
-      _myMarkers.add(Marker(
-        markerId: MarkerId(point.toString()),
-        position: point,
-        infoWindow: InfoWindow(
-          title: 'Nueva ubicación',
-        ),
-        icon: BitmapDescriptor.defaultMarker,
-      ));
-    });
-  }
-
-  void getUserLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    setState(() {
-      _initialPosition = LatLng(position.latitude, position.longitude);
-    });
-  }
+class _PdfVisorState extends State<PdfVisor> {
+  String pdf_url;
+  bool _isLoading = true;
+  PDFDocument document;
 
   @override
   void initState() {
     super.initState();
-
-    getUserLocation();
+    loadDocument();
   }
 
-  void validar() {
-    if (punto != null) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => siteForm(last_location: punto)));
-    } else {
-      Fluttertoast.showToast(
-          msg: "Debe seleccionar un punto en el mapa",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    }
+  _PdfVisorState(pdf_url) {
+    this.pdf_url = pdf_url;
   }
 
-//----------------------------------------
+  loadDocument() async {
+    document = await PDFDocument.fromURL(pdf_url);
 
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-    controller.setMapStyle(util.getMapStyle()); //cambiar el estilo del mapa
+    setState(() => _isLoading = false);
   }
 
   @override
@@ -142,69 +90,15 @@ class _mapPickerState extends State<mapPicker> {
                     //color: Color(0xFFe0f2f1)
                     ))),
         drawer: myDrawer(),
-        body: _initialPosition == null
-            ? Container(
-                child: Center(
-                  child: Text(
-                    'Cargando mapa..',
-                    style: TextStyle(
-                        fontFamily: 'Avenir-Medium', color: Colors.grey[400]),
-                  ),
-                ),
-              )
-            : Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Form(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                            padding: EdgeInsets.only(top: 10),
-                            child: Text(
-                              'Seleccione la ubicación del sitio dando click en el mapa',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xffD21D5B)),
-                            )),
-                        Divider(
-                          height: 5,
-                        ),
-                        Container(
-                          height: 450,
-                          child: GoogleMap(
-                            onMapCreated: _onMapCreated,
-                            myLocationButtonEnabled: true,
-                            myLocationEnabled: true,
-                            zoomGesturesEnabled: true,
-                            zoomControlsEnabled: true,
-                            markers: _myMarkers,
-                            onTap: _setMarker,
-                            initialCameraPosition: CameraPosition(
-                              target: _initialPosition,
-                              zoom: 14,
-                            ),
-                          ),
-                        ),
-                        Divider(
-                          height: 15,
-                        ),
-                        ElevatedButton(
-                          onPressed: validar,
-                          child: Text('Continuar'),
-                          style: ElevatedButton.styleFrom(
-                            shape: StadiumBorder(),
-                            textStyle: TextStyle(fontSize: 20),
-                            primary: Color(0xFF8BC540),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 40, vertical: 15),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+        body: Center(
+            child: _isLoading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : PDFViewer(
+                    document: document,
+                    zoomSteps: 1,
+                  )),
         bottomNavigationBar: _returnSphereBottomNavigationBar());
   }
 
@@ -268,7 +162,7 @@ class _mapPickerState extends State<mapPicker> {
               'assets/images/icon_bar1.png',
               height: 50,
             ),
-            selectedItemColor: Color(0xFFC4E49A),
+            selectedItemColor: Color(0xFFFFFF),
             title: 'Home'),
         BuildNavigationItem(
             tooltip: 'Chat',

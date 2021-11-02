@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_tabs/GoogleMapScreen.dart';
+import 'package:flutter_tabs/pdf_visor.dart';
 import 'package:flutter_tabs/src/localStorage.dart';
 import 'package:flutter_tabs/src/sphere_bottom_navigation_bar.dart';
 import 'package:flutter_tabs/welcome.dart';
@@ -152,7 +153,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     List<String> temp = cadena.split("-");
 
     name = server.getUrl() + temp[2];
-    return name;
+    return name.replaceAll('}', '');
   }
 
   _launchURL(String _url) async {
@@ -297,7 +298,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             child: Container(
                 margin: const EdgeInsets.only(top: 5.0, left: 10),
                 child: Text(
-                  'En esta sección encontrarás diferentes guías para llevar a cabo acciones que te permitan prolongar la vida útil de los aparatos electrónicos evitando que se conviertan en residuos "RAESS"',
+                  'En esta sección encontrarás diferentes guías para llevar a cabo acciones que te permitan prolongar la vida útil de los aparatos electrónicos evitando que se conviertan en residuos "RAES"',
                   style: TextStyle(fontSize: 12, color: Colors.black),
                 ))),
         new Expanded(
@@ -319,7 +320,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           image: getImage("${value}"),
                           width: 100),
                       onTap: () {
-                        _launchURL(getFile("${value}"));
+                        //_launchURL(getFile("{$value}"));
+                        print(getFile("{$value}"));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    PdfVisor(pdf_url: getFile("{$value}"))));
                       },
                     )),
                     Text(
@@ -365,7 +372,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               });
               break;
             case 1:
-              setState(() {
+              /*setState(() {
                 // heightContainer = 0.0;
 
                 if (_controller.value.isPlaying) {
@@ -376,7 +383,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => VideoPlayerScreen()));
-              });
+              });*/
               break;
             case 2:
               setState(() {
@@ -390,7 +397,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               });
               break;
             case 3:
-              setState(() {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => Educacion()));
+
+              /*setState(() {
                 if (_controller.value.isPlaying) {
                   _controller.pause();
                 }
@@ -411,7 +421,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => Educacion()));
                 }
-              });
+              });*/
               break;
             default:
           }

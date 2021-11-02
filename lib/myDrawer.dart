@@ -66,10 +66,10 @@ class _myDrawerState extends State<myDrawer> {
         if (jsondata["message"] != "error" &&
             jsondata["message"].toString().contains('.')) {
           avatar_image = jsondata["message"];
-          setState(() {});
+          // setState(() {});
         } else {
           avatar_image = 'php/avatars/avatar0.png';
-          setState(() {});
+          // setState(() {});
         }
       } else {
         print("Error during connection to server");

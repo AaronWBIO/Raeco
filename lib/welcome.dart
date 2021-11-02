@@ -84,6 +84,9 @@ class _WelcomeState extends State<Welcome> {
     // Initialize the controller and store the Future for later use.
     _initializeVideoPlayerFuture = _controller.initialize();
 
+    /*_initializeVideoPlayerFuture =
+        _controller.initialize().then((value) => _controller.play());]*/
+
     // Use the controller to loop the video.
     _controller.setLooping(false);
 
@@ -157,6 +160,7 @@ class _WelcomeState extends State<Welcome> {
                         if (snapshot.connectionState == ConnectionState.done) {
                           // If the VideoPlayerController has finished initialization, use
                           // the data it provides to limit the aspect ratio of the video.
+
                           return AspectRatio(
                             //aspectRatio: 5 / 2,
                             aspectRatio: _controller.value.aspectRatio,
@@ -200,7 +204,7 @@ class _WelcomeState extends State<Welcome> {
                       if (_controller.value.isPlaying) {
                         _controller.pause();
                       }
-
+                      _controller.pause();
                       Navigator.push(
                           context,
                           MaterialPageRoute(
