@@ -103,6 +103,58 @@ class Register extends StatelessWidget {
       'value': 'Profesionista',
       'label': 'Profesionista',
     },
+    {
+      'value': 'Técnico',
+      'label': 'Técnico',
+    },
+    {
+      'value': 'Trabajador de la Educación',
+      'label': 'Trabajador de la Educación',
+    },
+    {
+      'value': 'Trabajador del Arte, Espectáculo y deportes',
+      'label': 'Trabajador del Arte, Espectáculo y deportes',
+    },
+    {
+      'value': 'Funcionario del sector público o prívado',
+      'label': 'Funcionario del sector público o prívado',
+    },
+    {
+      'value': 'Trabajador en Actividades Agrícolas',
+      'label': 'Trabajador en Actividades Agrícolas',
+    },
+    {
+      'value': 'Jefe, supervisor o directivo',
+      'label': 'Jefe, supervisor o directivo',
+    },
+    {
+      'value': 'Ama de casa',
+      'label': 'Ama de casa',
+    },
+    {
+      'value': 'Artesano',
+      'label': 'Artesano',
+    },
+    {
+      'value': 'Ayudante o peón',
+      'label': 'Ayudante o peón',
+    },
+    {
+      'value': 'Conductor',
+      'label': 'Conductor',
+    },
+    {
+      'value': 'Comerciante',
+      'label': 'Comerciante',
+    },
+    {
+      'value': 'Trabajador Administrativo',
+      'label': 'Trabajador Administrativo',
+    },
+    {
+      'value': 'Trabajador en servicios domésticos',
+      'label': 'Trabajador en servicios domésticos',
+    },
   ];
 
   Future<void> save_register() async {

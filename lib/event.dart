@@ -17,6 +17,8 @@ import 'dart:convert';
 import 'GoogleMapScreen.dart';
 import 'consumo_responsable.dart';
 import 'educacion.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_tabs/src/localStorage.dart';
 
 import 'myDrawer.dart';
 
@@ -48,6 +50,8 @@ class _EventState extends State<Event> {
   _EventState(siteName) {
     this.site_name = siteName;
   }
+
+  String usuario = '';
   @override
   void initState() {
     super.initState();
@@ -59,6 +63,23 @@ class _EventState extends State<Event> {
       final siteModel = Provider.of<SiteModel>(context, listen: false);
       siteModel.urlImageEvent = '';
     });
+
+    loadUser();
+    localStorage storage = new localStorage();
+    usuario = storage.getUser();
+
+    loadedImage = loadAvatarImage();
+  }
+
+  loadUser() async {
+    await _getUser();
+    setState(() {});
+  }
+
+  _getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    usuario = prefs.getString('usuario');
+    //print('el usuarui es: ' + usuario);
   }
 
   //------load info
@@ -116,6 +137,75 @@ class _EventState extends State<Event> {
   }
 
   //--------------
+//----------avatar image---------------------------
+  Future<String> loadedImage;
+  String avatar_image = '';
+  Future<String> loadAvatarImage() async {
+    await _getUser();
+    if (usuario
+        .toString()
+        .contains('-')) //quiere decir que el usuario ha inciado sesión
+    {
+      List<String> temp = usuario.split("-");
+      String id = temp[1];
+
+      String uploadurl = server.getUrl() + "php/users.php";
+      response = await http.post(Uri.parse(uploadurl),
+          body: {'action': 'get_avatar_image', 'id': id});
+
+      if (response.statusCode == 200) {
+        var jsondata = json.decode(response.body); //decode json data
+        print('RESPUESTA: ' + jsondata["message"]);
+        if (jsondata["message"] != "error" &&
+            jsondata["message"].toString().contains('.')) {
+          avatar_image = jsondata["message"];
+          // setState(() {});
+        } else {
+          avatar_image = 'php/avatars/avatar0.png';
+          // setState(() {});
+        }
+      } else {
+        print("Error during connection to server");
+      }
+    } else {
+      print('USUARIO NO HA INICIADO SESIÓN');
+      avatar_image = 'php/avatars/avatar0.png';
+      setState(() {});
+    }
+
+    return "done";
+  }
+
+  Widget AvatarImage() {
+    return Container(
+      width: 50,
+      height: 50,
+      child: null,
+      decoration: BoxDecoration(
+          image: DecorationImage(
+            image: NetworkImage(server.getUrl() + avatar_image),
+            fit: BoxFit.cover,
+          ),
+          color: Colors.white,
+          border: Border.all(color: Color(0xFF23D5D1)),
+          shape: BoxShape.circle,
+          boxShadow: [
+            //color: Colors.white, //background color of box
+            BoxShadow(
+              color: Color(0xFFBBF3F4),
+              blurRadius: 5.0, // soften the shadow
+              spreadRadius: 5.0, //extend the shadow
+              offset: Offset(
+                0.0, // Move to right 10  horizontally
+                0.0, // Move to bottom 10 Vertically
+              ),
+            )
+          ]
+          //color: Color(0xFFe0f2f1)
+          ),
+    );
+  }
+//-------------------------------------
 
   @override
   Widget build(BuildContext context) {
@@ -133,9 +223,17 @@ class _EventState extends State<Event> {
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Image.asset(
-                        'assets/images/banner1.png',
-                        height: 40,
+                      FutureBuilder(
+                        future: loadedImage,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            if (snapshot.hasData) return AvatarImage();
+                          } else {
+                            return Center(child: CircularProgressIndicator());
+                          }
+                          return null;
+                        },
                       ),
                       Image.asset(
                         'assets/images/banner2.png',
@@ -735,10 +833,10 @@ class _EventState extends State<Event> {
               });
               break;
             case 3:
-            Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Educacion()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => Educacion()));
 
-            /*
+              /*
               setState(() {
                 // heightContainer = 0.0;
                 Navigator.push(context,

@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_tabs/GoogleMapScreen.dart';
-import 'package:flutter_tabs/pdf_visor.dart';
 import 'package:flutter_tabs/src/localStorage.dart';
 import 'package:flutter_tabs/src/sphere_bottom_navigation_bar.dart';
 import 'package:flutter_tabs/welcome.dart';
@@ -18,8 +17,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'consumo_responsable.dart';
 import 'educacion.dart';
-import 'login.dart';
 import 'myDrawer.dart';
+
+//import 'package:flutter_tabs/pdf_visor.dart';
+import 'package:flutter_tabs/image_visor.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   VideoPlayerScreen() : super();
@@ -69,14 +70,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         //status code might be 404 = url not found
       }
     } catch (e) {
-      Fluttertoast.showToast(
+      /*Fluttertoast.showToast(
           msg: "Ocurrio un error, inténtelo más tarde",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.black,
           textColor: Colors.white,
-          fontSize: 16.0);
+          fontSize: 16.0);*/
       print("Error: " + e.toString());
       //progressD.hide();
       //there is error during converting file image to base64 encoding.
@@ -109,6 +110,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     loadUser();
     localStorage storage = new localStorage();
     usuario = storage.getUser();
+
+    loadedImage = loadAvatarImage();
   }
 
   loadUser() async {
@@ -161,6 +164,76 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
   }
 
+//----------avatar image---------------------------
+  Future<String> loadedImage;
+  String avatar_image = '';
+  Future<String> loadAvatarImage() async {
+    await _getUser();
+    if (usuario
+        .toString()
+        .contains('-')) //quiere decir que el usuario ha inciado sesión
+    {
+      List<String> temp = usuario.split("-");
+      String id = temp[1];
+
+      String uploadurl = server.getUrl() + "php/users.php";
+      response = await http.post(Uri.parse(uploadurl),
+          body: {'action': 'get_avatar_image', 'id': id});
+
+      if (response.statusCode == 200) {
+        var jsondata = json.decode(response.body); //decode json data
+        print('RESPUESTA: ' + jsondata["message"]);
+        if (jsondata["message"] != "error" &&
+            jsondata["message"].toString().contains('.')) {
+          avatar_image = jsondata["message"];
+          // setState(() {});
+        } else {
+          avatar_image = 'php/avatars/avatar0.png';
+          // setState(() {});
+        }
+      } else {
+        print("Error during connection to server");
+      }
+    } else {
+      print('USUARIO NO HA INICIADO SESIÓN');
+      avatar_image = 'php/avatars/avatar0.png';
+      setState(() {});
+    }
+
+    return "done";
+  }
+
+  Widget AvatarImage() {
+    return Container(
+      width: 50,
+      height: 50,
+      child: null,
+      decoration: BoxDecoration(
+          image: DecorationImage(
+            image: NetworkImage(server.getUrl() + avatar_image),
+            fit: BoxFit.cover,
+          ),
+          color: Colors.white,
+          border: Border.all(color: Color(0xFF23D5D1)),
+          shape: BoxShape.circle,
+          boxShadow: [
+            //color: Colors.white, //background color of box
+            BoxShadow(
+              color: Color(0xFFBBF3F4),
+              blurRadius: 5.0, // soften the shadow
+              spreadRadius: 5.0, //extend the shadow
+              offset: Offset(
+                0.0, // Move to right 10  horizontally
+                0.0, // Move to bottom 10 Vertically
+              ),
+            )
+          ]
+          //color: Color(0xFFe0f2f1)
+          ),
+    );
+  }
+//-------------------------------------
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,9 +247,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Image.asset(
-                        'assets/images/banner1.png',
-                        height: 40,
+                      FutureBuilder(
+                        future: loadedImage,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            if (snapshot.hasData) return AvatarImage();
+                          } else {
+                            return Center(child: CircularProgressIndicator());
+                          }
+                          return null;
+                        },
                       ),
                       GestureDetector(
                         child: Image.asset(
@@ -298,7 +379,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             child: Container(
                 margin: const EdgeInsets.only(top: 5.0, left: 10),
                 child: Text(
-                  'En esta sección encontrarás diferentes guías para llevar a cabo acciones que te permitan prolongar la vida útil de los aparatos electrónicos evitando que se conviertan en residuos "RAES"',
+                  'En esta sección encontrarás diferentes guías para llevar a cabo acciones que te permitan prolongar la vida útil de los aparatos electrónicos evitando que se conviertan en residuos "RAE"',
                   style: TextStyle(fontSize: 12, color: Colors.black),
                 ))),
         new Expanded(
@@ -326,7 +407,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    PdfVisor(pdf_url: getFile("{$value}"))));
+                                    image_visor(pdf_url: getFile("{$value}"))));
                       },
                     )),
                     Text(

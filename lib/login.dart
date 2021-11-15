@@ -130,6 +130,56 @@ class Login extends StatelessWidget {
     }
   }
 
+  Future<void> send_email() async {
+    //show your own loading or progressing code here
+    progressD.show();
+
+    String uploadurl = server.getUrl() + "php/correos.php";
+    try {
+      response = await http.post(Uri.parse(uploadurl), body: {
+        'email': email,
+      });
+
+      //print("RESPUESTA: " + response.body);
+
+      if (response.statusCode == 200) {
+        //var jsondata = json.decode(response.body); //decode json data
+
+        Fluttertoast.showToast(
+            msg: "Hemos enviado un correo electrónico a " + email,
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16.0);
+
+        //progressD.hide();
+
+        //if error return from server, show message from server
+
+      } else {
+        print("Error during connection to server");
+        //there is error during connecting to server,
+        //status code might be 404 = url not found
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+          msg: "Ocurrio un error, inténtelo más tarde",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      print("Error: " + e.toString());
+      //progressD.hide();
+      //there is error during converting file image to base64 encoding.
+    } finally {
+      progressD.hide();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     mycontext = context;
@@ -261,7 +311,21 @@ class Login extends StatelessWidget {
                   Container(
                       margin: const EdgeInsets.only(top: 30.0),
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          formKey.currentState.save();
+                          if (!util.isValidEmail(email)) {
+                            Fluttertoast.showToast(
+                                msg: "Proporcione un email válido",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.CENTER,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.green,
+                                textColor: Colors.white,
+                                fontSize: 16.0);
+                          } else {
+                            send_email();
+                          }
+                        },
                         child: Text('Recuperar contraseña'),
                         style: ElevatedButton.styleFrom(
                           shape: StadiumBorder(),
@@ -334,9 +398,8 @@ class Login extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => Consumo_Responsable()));
             break;
           case 3:
-
-           Navigator.push(mycontext,
-                    MaterialPageRoute(builder: (context) => Educacion()));
+            Navigator.push(mycontext,
+                MaterialPageRoute(builder: (context) => Educacion()));
             /*if (!usuario.toString().contains('-')) {
               Fluttertoast.showToast(
                   msg: "Debe iniciar sesión para acceder a esta sección",

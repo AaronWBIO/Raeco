@@ -16,7 +16,6 @@ import 'consumo_responsable.dart';
 
 class Menu extends StatefulWidget {
   final int index;
-  //final String data;
   Menu({Key key, @required this.index}) : super(key: key);
 
   @override

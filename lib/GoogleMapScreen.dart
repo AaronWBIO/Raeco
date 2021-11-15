@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tabs/VideoPlayerScreen.dart';
 import 'package:flutter_tabs/consumo_responsable.dart';
 import 'package:flutter_tabs/educacion.dart';
-import 'package:flutter_tabs/login.dart';
+//import 'package:flutter_tabs/login.dart';
 import 'package:flutter_tabs/site.dart';
 import 'package:flutter_tabs/src/sphere_bottom_navigation_bar.dart';
 import 'package:flutter_tabs/src/util.dart';
@@ -16,7 +16,6 @@ import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
 
 import 'dart:convert';
-import 'package:select_form_field/select_form_field.dart';
 //import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter_tabs/src/server.dart';
@@ -355,109 +354,107 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
     }
   }
 
-  loadMarkers2(String option) async {
+  Future<void> loadMarkers2(String option) async {
     //show your own loading or progressing code here
 
-    //progressD.show();
+    progressD.show();
     //server servidor = new server();
+    print("getting points...");
 
     String uploadurl = server.getUrl() + "php/get_points.php";
 
-    try {
-      response = await http.post(Uri.parse(uploadurl), body: {
-        'option': option,
-        'category': cat,
-      });
+    response = await http.post(Uri.parse(uploadurl), body: {
+      'option': option,
+      'category': '0',
+    });
 
-      //print("RESPUESTA: " + response.body);
+    //print("RESPUESTA: " + response.body);
 
-      if (response.statusCode == 200) {
-        var jsondata = json.decode(response.body); //decode json data
-        //print("gps: " + jsondata[i]['category']);
-        setState(() {
-          _myMarkers.clear();
-          for (var i = 0; i < jsondata.length; i++) {
-            if (jsondata[i]['category'] == "1") {
-              _myMarkers.add(Marker(
-                  markerId: MarkerId("marker_" + i.toString()),
-                  position: LatLng(double.parse(jsondata[i]['lat']),
-                      double.parse(jsondata[i]['lon'])),
-                  icon: acopio_icon,
-                  infoWindow: InfoWindow(
-                    title: jsondata[i]['business_name'],
-                  ),
-                  onTap: () {
-                    show_site(jsondata[i]['business_name']);
-                  }));
-            }
+    if (response.statusCode == 200) {
+      //print("DATOS: " + response.body);
+      var jsondata = json.decode(response.body); //decode json data
 
-            if (jsondata[i]['category'] == "2") {
-              _myMarkers.add(Marker(
-                  markerId: MarkerId("marker_" + i.toString()),
-                  position: LatLng(double.parse(jsondata[i]['lat']),
-                      double.parse(jsondata[i]['lon'])),
-                  icon: reparacion_icon,
-                  infoWindow: InfoWindow(
-                    title: jsondata[i]['business_name'],
-                  ),
-                  onTap: () {
-                    show_site(jsondata[i]['business_name']);
-                  }));
-            }
-
-            if (jsondata[i]['category'] == "3") {
-              _myMarkers.add(Marker(
-                  markerId: MarkerId("marker_" + i.toString()),
-                  position: LatLng(double.parse(jsondata[i]['lat']),
-                      double.parse(jsondata[i]['lon'])),
-                  icon: mantenimiento_icon,
-                  infoWindow: InfoWindow(
-                    title: jsondata[i]['business_name'],
-                  ),
-                  onTap: () {
-                    show_site(jsondata[i]['business_name']);
-                  }));
-            }
-            if (jsondata[i]['category'] == "4") {
-              _myMarkers.add(Marker(
-                  markerId: MarkerId("marker_" + i.toString()),
-                  position: LatLng(double.parse(jsondata[i]['lat']),
-                      double.parse(jsondata[i]['lon'])),
-                  icon: oficial_icon,
-                  infoWindow: InfoWindow(
-                    title: jsondata[i]['business_name'],
-                  ),
-                  onTap: () {
-                    show_site(jsondata[i]['business_name']);
-                  }));
-            }
-
-            if (jsondata[i]['category'] == "event") {
-              _myMarkers.add(Marker(
-                  markerId: MarkerId("marker_" + i.toString()),
-                  position: LatLng(double.parse(jsondata[i]['lat']),
-                      double.parse(jsondata[i]['lon'])),
-                  icon: evento_icon,
-                  infoWindow: InfoWindow(
-                    title: jsondata[i]['name'],
-                  ),
-                  onTap: () {
-                    show_event(jsondata[i]['name']);
-                  }));
-            }
+      setState(() {
+        _myMarkers.clear();
+        for (var i = 0; i < jsondata.length; i++) {
+          if (jsondata[i]['category'].toString() == "1") {
+            _myMarkers.add(Marker(
+                markerId: MarkerId("marker_" + i.toString()),
+                position: LatLng(double.parse(jsondata[i]['lat']),
+                    double.parse(jsondata[i]['lon'])),
+                icon: acopio_icon,
+                infoWindow: InfoWindow(
+                  title: jsondata[i]['business_name'],
+                ),
+                onTap: () {
+                  show_site(jsondata[i]['business_name']);
+                }));
           }
-        });
-      } else {
-        print("Error during connection to server");
-        //there is error during connecting to server,
-        //status code might be 404 = url not found
-      }
-    } catch (e) {
-      print("Error: " + e.toString());
-      //progressD.hide();
-    } finally {
-      //progressD.hide();
+
+          if (jsondata[i]['category'].toString() == "2") {
+            _myMarkers.add(Marker(
+                markerId: MarkerId("marker_" + i.toString()),
+                position: LatLng(double.parse(jsondata[i]['lat']),
+                    double.parse(jsondata[i]['lon'])),
+                icon: reparacion_icon,
+                infoWindow: InfoWindow(
+                  title: jsondata[i]['business_name'],
+                ),
+                onTap: () {
+                  show_site(jsondata[i]['business_name']);
+                }));
+          }
+
+          if (jsondata[i]['category'].toString() == "3") {
+            _myMarkers.add(Marker(
+                markerId: MarkerId("marker_" + i.toString()),
+                position: LatLng(double.parse(jsondata[i]['lat']),
+                    double.parse(jsondata[i]['lon'])),
+                icon: mantenimiento_icon,
+                infoWindow: InfoWindow(
+                  title: jsondata[i]['business_name'],
+                ),
+                onTap: () {
+                  show_site(jsondata[i]['business_name']);
+                }));
+          }
+          if (jsondata[i]['category'].toString() == "4") {
+            _myMarkers.add(Marker(
+                markerId: MarkerId("marker_" + i.toString()),
+                position: LatLng(double.parse(jsondata[i]['lat']),
+                    double.parse(jsondata[i]['lon'])),
+                icon: oficial_icon,
+                infoWindow: InfoWindow(
+                  title: jsondata[i]['business_name'],
+                ),
+                onTap: () {
+                  show_site(jsondata[i]['business_name']);
+                }));
+          }
+
+          if (jsondata[i]['category'].toString() == "event") {
+            _myMarkers.add(Marker(
+                markerId: MarkerId("marker_" + i.toString()),
+                position: LatLng(double.parse(jsondata[i]['lat']),
+                    double.parse(jsondata[i]['lon'])),
+                icon: evento_icon,
+                infoWindow: InfoWindow(
+                  title: jsondata[i]['name'],
+                ),
+                onTap: () {
+                  show_event(jsondata[i]['name']);
+                }));
+          }
+        }
+      });
+      progressD.hide();
+    } else {
+      print("Error during connection to server");
+      progressD.hide();
+      //there is error during connecting to server,
+      //status code might be 404 = url not found
     }
+    progressD.hide();
   }
 
 //-----------------------------------------------------
@@ -477,20 +474,23 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
         desiredAccuracy: LocationAccuracy.high);
     setState(() {
       _initialPosition = LatLng(position.latitude, position.longitude);
+
+      loadMarkers2("all");
     });
   }
 
+  Future<String> loadedImage;
   @override
   void initState() {
     super.initState();
     SetCustomMarker();
     getUserLocation();
 
-    loadMarkers2("all");
-
     loadUser();
     localStorage storage = new localStorage();
     usuario = storage.getUser();
+
+    loadedImage = loadAvatarImage();
   }
 
   loadUser() async {
@@ -759,6 +759,75 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
         barrierDismissible: false);
   }*/
 
+//----------avatar image---------------------------
+  String avatar_image = '';
+  Future<String> loadAvatarImage() async {
+    await _getUser();
+    if (usuario
+        .toString()
+        .contains('-')) //quiere decir que el usuario ha inciado sesión
+    {
+      List<String> temp = usuario.split("-");
+      String id = temp[1];
+
+      String uploadurl = server.getUrl() + "php/users.php";
+      response = await http.post(Uri.parse(uploadurl),
+          body: {'action': 'get_avatar_image', 'id': id});
+
+      if (response.statusCode == 200) {
+        var jsondata = json.decode(response.body); //decode json data
+        print('RESPUESTA: ' + jsondata["message"]);
+        if (jsondata["message"] != "error" &&
+            jsondata["message"].toString().contains('.')) {
+          avatar_image = jsondata["message"];
+          // setState(() {});
+        } else {
+          avatar_image = 'php/avatars/avatar0.png';
+          // setState(() {});
+        }
+      } else {
+        print("Error during connection to server");
+      }
+    } else {
+      print('USUARIO NO HA INICIADO SESIÓN');
+      avatar_image = 'php/avatars/avatar0.png';
+      setState(() {});
+    }
+
+    return "done";
+  }
+
+  Widget AvatarImage() {
+    return Container(
+      width: 50,
+      height: 50,
+      child: null,
+      decoration: BoxDecoration(
+          image: DecorationImage(
+            image: NetworkImage(server.getUrl() + avatar_image),
+            fit: BoxFit.cover,
+          ),
+          color: Colors.white,
+          border: Border.all(color: Color(0xFF23D5D1)),
+          shape: BoxShape.circle,
+          boxShadow: [
+            //color: Colors.white, //background color of box
+            BoxShadow(
+              color: Color(0xFFBBF3F4),
+              blurRadius: 5.0, // soften the shadow
+              spreadRadius: 5.0, //extend the shadow
+              offset: Offset(
+                0.0, // Move to right 10  horizontally
+                0.0, // Move to bottom 10 Vertically
+              ),
+            )
+          ]
+          //color: Color(0xFFe0f2f1)
+          ),
+    );
+  }
+//-------------------------------------
+
   @override
   Widget build(BuildContext context) {
     progressD = new ProgressDialog(context);
@@ -772,9 +841,22 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Image.asset(
+                        /*Image.asset(
                           'assets/images/banner1.png',
                           height: 40,
+                        ),
+*/
+                        FutureBuilder(
+                          future: loadedImage,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              if (snapshot.hasData) return AvatarImage();
+                            } else {
+                              return Center(child: CircularProgressIndicator());
+                            }
+                            return null;
+                          },
                         ),
                         GestureDetector(
                           child: Image.asset(

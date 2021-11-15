@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tabs/src/localStorage.dart';
 import 'package:flutter_tabs/src/sphere_bottom_navigation_bar.dart';
 import 'package:flutter_tabs/welcome.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+//import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,7 +15,7 @@ import 'GoogleMapScreen.dart';
 import 'VideoPlayerScreen.dart';
 import 'consumo_responsable.dart';
 import 'cuestionario.dart';
-import 'login.dart';
+//import 'login.dart';
 import 'myDrawer.dart';
 
 class Educacion extends StatefulWidget {
@@ -64,7 +64,7 @@ class _EducacionState extends State<Educacion> {
     }
   }
 
-  Future<String> loadPoints() async {
+  /*Future<String> loadPoints() async {
     String uploadurl = server.getUrl() + "php/education.php";
     if (!user.isEmpty) {
       List<String> temp = user.split("-");
@@ -90,6 +90,29 @@ class _EducacionState extends State<Educacion> {
       points = '0';
       return "done";
     }
+  }*/
+  Future<String> loadPoints() async {
+    String uploadurl = server.getUrl() + "php/education.php";
+    await _getUser();
+    List<String> temp = user.split("-");
+    String id = temp[1];
+
+    //print('user ID: ' + id);
+    response = await http
+        .post(Uri.parse(uploadurl), body: {'action': "get_points", 'id': id});
+
+    if (response.statusCode == 200) {
+      var jsondata = json.decode(response.body); //decode json data
+      if (jsondata["message"] != "error") {
+        points = jsondata["message"];
+        print('Puntos:' + points);
+        setState(() {});
+      }
+    } else {
+      print("Error during connection to server");
+    }
+
+    return "done";
   }
 
   loadUser() async {
@@ -110,6 +133,8 @@ class _EducacionState extends State<Educacion> {
     //loadedAvatarInfo = loadAvatarInfo();
     loadedAvatarInfo = loadAvatarImage();
     //--------------
+
+    loadedImage = loadAvatarImage2();
   }
 
   _getUser() async {
@@ -342,6 +367,7 @@ class _EducacionState extends State<Educacion> {
                         child: Text(
                           getIntro(value),
                           style: TextStyle(fontSize: 14, color: Colors.black),
+                          textAlign: TextAlign.justify,
                         )),
                   )),
                   Center(
@@ -395,6 +421,76 @@ class _EducacionState extends State<Educacion> {
     _showDialog_init(context, value);
   }
 
+  //----------avatar image---------------------------
+  Future<String> loadedImage;
+  String avatar_image2 = '';
+  Future<String> loadAvatarImage2() async {
+    await _getUser();
+    if (user
+        .toString()
+        .contains('-')) //quiere decir que el usuario ha inciado sesión
+    {
+      List<String> temp = user.split("-");
+      String id = temp[1];
+
+      String uploadurl = server.getUrl() + "php/users.php";
+      response = await http.post(Uri.parse(uploadurl),
+          body: {'action': 'get_avatar_image', 'id': id});
+
+      if (response.statusCode == 200) {
+        var jsondata = json.decode(response.body); //decode json data
+        print('RESPUESTA: ' + jsondata["message"]);
+        if (jsondata["message"] != "error" &&
+            jsondata["message"].toString().contains('.')) {
+          avatar_image = jsondata["message"];
+          // setState(() {});
+        } else {
+          avatar_image = 'php/avatars/avatar0.png';
+          // setState(() {});
+        }
+      } else {
+        print("Error during connection to server");
+      }
+    } else {
+      print('USUARIO NO HA INICIADO SESIÓN');
+      avatar_image = 'php/avatars/avatar0.png';
+      setState(() {});
+    }
+
+    return "done";
+  }
+
+  Widget AvatarImage() {
+    return Container(
+      width: 50,
+      height: 50,
+      child: null,
+      decoration: BoxDecoration(
+          image: DecorationImage(
+            image: NetworkImage(server.getUrl() + avatar_image),
+            fit: BoxFit.cover,
+          ),
+          color: Colors.white,
+          border: Border.all(color: Color(0xFF23D5D1)),
+          shape: BoxShape.circle,
+          boxShadow: [
+            //color: Colors.white, //background color of box
+            BoxShadow(
+              color: Color(0xFFBBF3F4),
+              blurRadius: 5.0, // soften the shadow
+              spreadRadius: 5.0, //extend the shadow
+              offset: Offset(
+                0.0, // Move to right 10  horizontally
+                0.0, // Move to bottom 10 Vertically
+              ),
+            )
+          ]
+          //color: Color(0xFFe0f2f1)
+          ),
+    );
+  }
+//-------------------------------------
+
   @override
   Widget build(BuildContext context) {
     mycontext = context;
@@ -408,9 +504,17 @@ class _EducacionState extends State<Educacion> {
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Image.asset(
-                        'assets/images/banner1.png',
-                        height: 40,
+                      FutureBuilder(
+                        future: loadedImage,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            if (snapshot.hasData) return AvatarImage();
+                          } else {
+                            return Center(child: CircularProgressIndicator());
+                          }
+                          return null;
+                        },
                       ),
                       GestureDetector(
                         child: Image.asset(
@@ -508,7 +612,7 @@ class _EducacionState extends State<Educacion> {
                   child: Column(
                     children: [
                       SizedBox(
-                        height: 18,
+                        height: 25,
                       ),
                       Image(
                         image: AssetImage('assets/images/change_icon.png'),
@@ -655,8 +759,8 @@ class _EducacionState extends State<Educacion> {
             case 3:
               setState(() {
                 // heightContainer = 0.0;
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Educacion()));
+                /* Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Educacion()));*/
               });
               break;
             default:

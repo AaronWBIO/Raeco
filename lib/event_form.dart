@@ -3,7 +3,7 @@ import 'package:flutter_tabs/src/localStorage.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabs/src/sphere_bottom_navigation_bar.dart';
-import 'package:path_provider/path_provider.dart';
+//import 'package:path_provider/path_provider.dart';
 
 import 'package:async/async.dart';
 import 'package:path/path.dart';
@@ -111,6 +111,10 @@ class _EventFormState extends State<EventForm> {
     {
       'value': 'Chihuahua',
       'label': 'Chihuahua',
+    },
+    {
+      'value': 'Ciudad de México',
+      'label': 'Ciudad de México',
     },
     {
       'value': 'Coahuila de Zaragoza',
@@ -879,6 +883,7 @@ class _EventFormState extends State<EventForm> {
                     if (value.isEmpty) {
                       return "Debe llenar este campo";
                     }
+                    return null;
                   },
                   decoration: InputDecoration(
                       labelText: "Estados:",
@@ -981,6 +986,7 @@ class _EventFormState extends State<EventForm> {
                     if (!util.isValidEmail(value)) {
                       return "email no valido";
                     }
+                    return null;
                   },
                 ),
                 Divider(

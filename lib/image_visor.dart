@@ -1,81 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tabs/event_form.dart';
 import 'package:flutter_tabs/src/sphere_bottom_navigation_bar.dart';
 import 'package:flutter_tabs/src/util.dart';
-
-import 'package:geolocator/geolocator.dart';
-
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:progress_dialog/progress_dialog.dart';
-
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
 
 import 'GoogleMapScreen.dart';
 import 'VideoPlayerScreen.dart';
 import 'consumo_responsable.dart';
 import 'educacion.dart';
-import 'package:flutter_tabs/src/server.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_tabs/src/localStorage.dart';
-
 import 'myDrawer.dart';
+import 'package:photo_view/photo_view.dart';
 
-class mapPickerEvent extends StatefulWidget {
+import 'package:flutter_tabs/src/localStorage.dart';
+import 'package:flutter_tabs/src/server.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+
+class image_visor extends StatefulWidget {
+  final String pdf_url;
+  image_visor({Key key, @required this.pdf_url}) : super(key: key);
+
   @override
-  _mapPickerEventState createState() => _mapPickerEventState();
+  _image_visorState createState() => _image_visorState(pdf_url);
 }
 
-class _mapPickerEventState extends State<mapPickerEvent> {
-  //int index = 0;
-
-  ProgressDialog pr;
-
-  Set<Marker> _myMarkers = {};
-
-  GoogleMapController mapController;
-  LatLng _initialPosition;
-  Geolocator geolocator = Geolocator();
-
-  String punto;
-
-  _setMarker(LatLng point) {
-    punto = point.latitude.toString() + "," + point.longitude.toString();
-    _myMarkers.clear();
-    setState(() {
-      _myMarkers.add(Marker(
-        markerId: MarkerId(point.toString()),
-        position: point,
-        infoWindow: InfoWindow(
-          title: 'Nueva ubicación',
-        ),
-        icon: BitmapDescriptor.defaultMarker,
-      ));
-    });
-  }
-
-  void getUserLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    setState(() {
-      _initialPosition = LatLng(position.latitude, position.longitude);
-    });
-  }
-
-  String usuario = "";
+class _image_visorState extends State<image_visor> {
+  String pdf_url;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-
-    getUserLocation();
 
     loadUser();
     localStorage storage = new localStorage();
     usuario = storage.getUser();
 
     loadedImage = loadAvatarImage();
+
+    print('url: ' + pdf_url);
   }
 
   loadUser() async {
@@ -89,36 +51,16 @@ class _mapPickerEventState extends State<mapPickerEvent> {
     //print('el usuarui es: ' + usuario);
   }
 
-  void validar() {
-    if (punto != null) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => EventForm(last_location: punto)));
-    } else {
-      Fluttertoast.showToast(
-          msg: "Debe seleccionar un punto en el mapa",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    }
-  }
-
-//----------------------------------------
-
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-    controller.setMapStyle(util.getMapStyle()); //cambiar el estilo del mapa
+  _image_visorState(pdf_url) {
+    this.pdf_url = pdf_url;
   }
 
   //----------avatar image---------------------------
+  String usuario = '';
   var response;
-
-  Future<String> loadedImage;
   String avatar_image = '';
+  Future<String> loadedImage;
+
   Future<String> loadAvatarImage() async {
     await _getUser();
     if (usuario
@@ -188,9 +130,6 @@ class _mapPickerEventState extends State<mapPickerEvent> {
 
   @override
   Widget build(BuildContext context) {
-    pr = new ProgressDialog(context);
-    pr.style(message: 'Espere un momento...');
-
     return Scaffold(
         appBar: PreferredSize(
             preferredSize: Size.fromHeight(kToolbarHeight),
@@ -249,74 +188,42 @@ class _mapPickerEventState extends State<mapPickerEvent> {
                     //color: Color(0xFFe0f2f1)
                     ))),
         drawer: myDrawer(),
-        body: _initialPosition == null
-            ? Container(
-                child: Center(
-                  child: Text(
-                    'Cargando mapa..',
-                    style: TextStyle(
-                        fontFamily: 'Avenir-Medium', color: Colors.grey[400]),
-                  ),
-                ),
-              )
-            : Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Form(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          padding: EdgeInsets.only(top: 10),
-                          child: Text(
-                            'Seleccione la ubicación del sitio dando click en el mapa',
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xffD21D5B)),
-                          ),
-                        ),
-                        Divider(
-                          height: 5,
-                        ),
-                        Container(
-                          height: 450,
-                          child: GoogleMap(
-                            onMapCreated: _onMapCreated,
-                            myLocationButtonEnabled: true,
-                            myLocationEnabled: true,
-                            zoomGesturesEnabled: true,
-                            zoomControlsEnabled: true,
-                            markers: _myMarkers,
-                            onTap: _setMarker,
-                            initialCameraPosition: CameraPosition(
-                              target: _initialPosition,
-                              zoom: 14,
-                            ),
-                          ),
-                        ),
-                        Divider(
-                          height: 15,
-                        ),
-                        ElevatedButton(
-                          onPressed: validar,
-                          child: Text('Continuar'),
-                          style: ElevatedButton.styleFrom(
-                            shape: StadiumBorder(),
-                            textStyle: TextStyle(fontSize: 20),
-                            primary: Color(0xFF8BC540),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 50, vertical: 15),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
+        body: Center(
+            child: PhotoView(
+          loadingBuilder: (context, event) => Center(
+            child: Container(
+              width: 60.0,
+              height: 60.0,
+              child: CircularProgressIndicator(
+                value: event == null
+                    ? 0
+                    : event.cumulativeBytesLoaded / event.expectedTotalBytes,
               ),
+            ),
+          ),
+          imageProvider: NetworkImage(this.pdf_url),
+          backgroundDecoration: BoxDecoration(color: Colors.white),
+        )),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            // Add your onPressed code here!
+            if (pdf_url.contains("infographics")) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Consumo_Responsable()));
+            } else {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => VideoPlayerScreen()));
+            }
+          },
+          child: const Icon(Icons.arrow_back),
+          backgroundColor: Colors.green,
+        ),
         bottomNavigationBar: _returnSphereBottomNavigationBar());
   }
 
-  //------------------------------------
+//------------------------------------
   int index = 0;
 
   Widget _returnSphereBottomNavigationBar() {
@@ -358,8 +265,7 @@ class _mapPickerEventState extends State<mapPickerEvent> {
             case 3:
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => Educacion()));
-              /*
-              setState(() {
+              /* setState(() {
                 // heightContainer = 0.0;
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => Educacion()));
@@ -377,7 +283,7 @@ class _mapPickerEventState extends State<mapPickerEvent> {
               'assets/images/icon_bar1.png',
               height: 50,
             ),
-            selectedItemColor: Color(0xFFC4E49A),
+            selectedItemColor: Color(0xFFFFFF),
             title: 'Home'),
         BuildNavigationItem(
             tooltip: 'Chat',

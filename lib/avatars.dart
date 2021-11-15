@@ -8,15 +8,10 @@ import 'package:flutter_tabs/VideoPlayerScreen.dart';
 import 'package:flutter_tabs/src/sphere_bottom_navigation_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:video_player/video_player.dart';
 import 'package:flutter_tabs/src/server.dart';
 
-import 'package:url_launcher/url_launcher.dart';
-
 import 'GoogleMapScreen.dart';
-import 'cuestionario.dart';
 import 'myDrawer.dart';
 
 class Avatars extends StatefulWidget {
@@ -525,7 +520,7 @@ class _AvatarsState extends State<Avatars> {
                   child: Column(
                     children: [
                       SizedBox(
-                        height: 18,
+                        height: 25,
                       ),
                       Image(
                         image: AssetImage('assets/images/change_icon.png'),
@@ -665,7 +660,7 @@ class _AvatarsState extends State<Avatars> {
                               child: Column(
                                 children: [
                                   SizedBox(
-                                    height: 1,
+                                    height: 6,
                                   ),
                                   Center(
                                       child: Image(
