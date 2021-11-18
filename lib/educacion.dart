@@ -92,26 +92,29 @@ class _EducacionState extends State<Educacion> {
     }
   }*/
   Future<String> loadPoints() async {
-    String uploadurl = server.getUrl() + "php/education.php";
-    await _getUser();
-    List<String> temp = user.split("-");
-    String id = temp[1];
+    try {
+      String uploadurl = server.getUrl() + "php/education.php";
+      await _getUser();
+      List<String> temp = user.split("-");
+      String id = temp[1];
 
-    //print('user ID: ' + id);
-    response = await http
-        .post(Uri.parse(uploadurl), body: {'action': "get_points", 'id': id});
+      //print('user ID: ' + id);
+      response = await http
+          .post(Uri.parse(uploadurl), body: {'action': "get_points", 'id': id});
 
-    if (response.statusCode == 200) {
-      var jsondata = json.decode(response.body); //decode json data
-      if (jsondata["message"] != "error") {
-        points = jsondata["message"];
-        print('Puntos:' + points);
-        setState(() {});
+      if (response.statusCode == 200) {
+        var jsondata = json.decode(response.body); //decode json data
+        if (jsondata["message"] != "error") {
+          points = jsondata["message"];
+          print('Puntos:' + points);
+          setState(() {});
+        }
+      } else {
+        print("Error during connection to server");
       }
-    } else {
-      print("Error during connection to server");
+    } catch (e) {
+      points = '0';
     }
-
     return "done";
   }
 
@@ -637,9 +640,6 @@ class _EducacionState extends State<Educacion> {
                                       fontWeight: FontWeight.w800),
                                   textAlign: TextAlign.center);
                           } else {
-                            // If the VideoPlayerController is still initializing, show a
-                            // loading spinner.
-
                             return Center(child: CircularProgressIndicator());
                           }
                           return null;
