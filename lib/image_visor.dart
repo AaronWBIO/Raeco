@@ -52,7 +52,7 @@ class _image_visorState extends State<image_visor> {
   }
 
   _image_visorState(pdf_url) {
-    this.pdf_url = pdf_url;
+    this.pdf_url = pdf_url.toString().trim();
   }
 
   //----------avatar image---------------------------
