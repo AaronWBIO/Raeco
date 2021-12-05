@@ -20,6 +20,7 @@ import 'dart:convert';
 
 import 'package:flutter_tabs/src/server.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io' show Platform;
 
 import 'event.dart';
 import 'myDrawer.dart';
@@ -505,20 +506,21 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
   }
 
   void SetCustomMarker() async {
+    bool isIOS = Platform.isIOS;
     acopio_icon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(), 'assets/images/acopio_icon.png');
+        ImageConfiguration(size: Size(24,24)), 'assets/images/acopio_icon' + (isIOS ? '' : '2x') + '.png');
 
     reparacion_icon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(), 'assets/images/reparacion_icon.png');
+        ImageConfiguration(size: Size(24,24)), 'assets/images/reparacion_icon' + (isIOS ? '' : '2x') + '.png');
 
     mantenimiento_icon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(), 'assets/images/mantenimiento_icon.png');
+        ImageConfiguration(size: Size(24,24)), 'assets/images/mantenimiento_icon' + (isIOS ? '' : '2x') + '.png');
 
     oficial_icon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(), 'assets/images/oficial_icon.png');
+        ImageConfiguration(size: Size(24,24)), 'assets/images/oficial_icon' + (isIOS ? '' : '2x') + '.png');
 
     evento_icon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(), 'assets/images/evento_icon.png');
+        ImageConfiguration(size: Size(24,24)), 'assets/images/evento_icon' + (isIOS ? '' : '2x') + '.png');
   }
 
   void moveCameraPosition() async {

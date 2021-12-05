@@ -110,18 +110,22 @@ class _EventState extends State<Event> {
             phone = jsondata != null ? jsondata[0]['cel'] : "";
 
             if (jsondata[0]['image_url'] != "") {
-              image_network = server.getUrl() + jsondata[0]['image_url'];
+              if (jsondata[0]['image_url'].toString().contains('.'))
+                image_network = server.getUrl() + jsondata[0]['image_url'];
             }
             if (jsondata[0]['image_url2'] != "") {
-              image_network2 = server.getUrl() + jsondata[0]['image_url2'];
+              if (jsondata[0]['image_url2'].toString().contains('.'))
+                image_network2 = server.getUrl() + jsondata[0]['image_url2'];
             }
 
             if (jsondata[0]['image_url3'] != "") {
-              image_network3 = server.getUrl() + jsondata[0]['image_url3'];
+              if (jsondata[0]['image_url3'].toString().contains('.'))
+                image_network3 = server.getUrl() + jsondata[0]['image_url3'];
             }
 
             if (jsondata[0]['image_url4'] != "") {
-              image_network4 = server.getUrl() + jsondata[0]['image_url4'];
+              if (jsondata[0]['image_url4'].toString().contains('.'))
+                image_network4 = server.getUrl() + jsondata[0]['image_url4'];
             }
             print(image_network);
           }

@@ -90,7 +90,7 @@ class _SiteState extends State<Site> {
       response = await http.post(Uri.parse(uploadurl),
           body: {'option': 'get_info', 'name': site_name});
 
-      print("RESPUESTA: " + response.body);
+      print("JSON: " + response.body);
 
       if (response.statusCode == 200) {
         var jsondata = json.decode(response.body); //decode json data
@@ -116,19 +116,23 @@ class _SiteState extends State<Site> {
           }
 
           if (jsondata[0]['image_url'] != "") {
-            image_network = server.getUrl() + jsondata[0]['image_url'];
+            if (jsondata[0]['image_url'].toString().contains('.'))
+              image_network = server.getUrl() + jsondata[0]['image_url'];
           }
 
           if (jsondata[0]['image_url2'] != "") {
-            image_network2 = server.getUrl() + jsondata[0]['image_url2'];
+            if (jsondata[0]['image_url2'].toString().contains('.'))
+              image_network2 = server.getUrl() + jsondata[0]['image_url2'];
           }
 
           if (jsondata[0]['image_url3'] != "") {
-            image_network3 = server.getUrl() + jsondata[0]['image_url3'];
+            if (jsondata[0]['image_url3'].toString().contains('.'))
+              image_network3 = server.getUrl() + jsondata[0]['image_url3'];
           }
 
           if (jsondata[0]['image_url4'] != "") {
-            image_network4 = server.getUrl() + jsondata[0]['image_url4'];
+            if (jsondata[0]['image_url4'].toString().contains('.'))
+              image_network4 = server.getUrl() + jsondata[0]['image_url4'];
           }
 
           //print("CATEGORIA: " + jsondata[0]['category']);
@@ -152,6 +156,10 @@ class _SiteState extends State<Site> {
           insta = jsondata[0]['instagram'];
 
           phone = jsondata[0]['cel'];
+
+          print(site_name);
+          print(description);
+          print(horario);
         });
       } else {
         print("Error during connection to server");
@@ -176,7 +184,9 @@ class _SiteState extends State<Site> {
           textColor: Colors.white,
           fontSize: 16.0);*/
       print("Error: " + e.toString());
-    } finally {}
+    } finally {
+      return "Done";
+    }
     return "Done";
   }
 
