@@ -374,7 +374,7 @@ class Register extends StatelessWidget {
                       onSaved: (val) => gender = val,
                       validator: (value) {
                         if (value.isEmpty) {
-                          return "Debe llenar este campo";
+                          //return "Debe llenar este campo";
                         }
                       },
                       decoration: InputDecoration(
@@ -394,7 +394,7 @@ class Register extends StatelessWidget {
                       onSaved: (val) => age = val,
                       validator: (value) {
                         if (value.isEmpty) {
-                          return "Debe llenar este campo";
+                          //return "Debe llenar este campo";
                         }
                       },
                       decoration: InputDecoration(
