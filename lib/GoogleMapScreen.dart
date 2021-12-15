@@ -1266,7 +1266,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
       centroAcopio = "Centro de acopio",
       centroReparacion = "Centro de reparación",
       sitioMantenimiento = "Sitio de mantenimiento",
-      sitioDispocisionOficial = "Sitio de disposición oficial",
+      //sitioDispocisionOficial = "Sitio de disposición oficial",
       eventos = "Eventos";
 
   double heightContainerCat = 0.0;
@@ -1277,7 +1277,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
     CategoriesModel(centroAcopio, false),
     CategoriesModel(centroReparacion, false),
     CategoriesModel(sitioMantenimiento, false),
-    CategoriesModel(sitioDispocisionOficial, false),
+    //CategoriesModel(sitioDispocisionOficial, false),
     CategoriesModel(eventos, false)
   ];
   List<CategoriesModel> lsCategoriesSelect = [];
@@ -1481,9 +1481,9 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
       case sitioMantenimiento:
         asset = "assets/images/icon_mantenimiento.png";
         break;
-      case sitioDispocisionOficial:
+      /*case sitioDispocisionOficial:
         asset = "assets/images/icon_oficial.png";
-        break;
+        break;*/
       case eventos:
         asset = "assets/images/icon_eventos.png";
         break;
