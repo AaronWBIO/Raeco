@@ -229,6 +229,11 @@ class _siteFormState extends State<siteForm> {
       'value': '4',
       'label': 'Sitio de mantenimineto',
     }*/
+    ,
+    {
+      'value': '5',
+      'label': 'Punto de Retorno',
+    }
   ];
 
   Future getImage(int posImage) async {
