@@ -20,7 +20,6 @@ import 'dart:convert';
 
 import 'package:flutter_tabs/src/server.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:io' show Platform;
 
 import 'event.dart';
 import 'myDrawer.dart';
@@ -51,6 +50,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
   BitmapDescriptor reparacion_icon;
   BitmapDescriptor mantenimiento_icon;
   BitmapDescriptor oficial_icon;
+  BitmapDescriptor pr_icon;
   BitmapDescriptor evento_icon;
 
   LatLng _initialPosition;
@@ -318,6 +318,20 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                   }));
             }
 
+            if (jsondata[i]['category'] == "5") {
+              _myMarkers.add(Marker(
+                  markerId: MarkerId("marker_" + i.toString()),
+                  position: LatLng(double.parse(jsondata[i]['lat']),
+                      double.parse(jsondata[i]['lon'])),
+                  icon: pr_icon,
+                  infoWindow: InfoWindow(
+                    title: jsondata[i]['business_name'],
+                  ),
+                  onTap: () {
+                    show_site(jsondata[i]['business_name']);
+                  }));
+            }
+
             if (jsondata[i]['category'] == "event") {
               _myMarkers.add(Marker(
                   markerId: MarkerId("marker_" + i.toString()),
@@ -433,6 +447,20 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                 }));
           }
 
+          if (jsondata[i]['category'] == "5") {
+            _myMarkers.add(Marker(
+                markerId: MarkerId("marker_" + i.toString()),
+                position: LatLng(double.parse(jsondata[i]['lat']),
+                    double.parse(jsondata[i]['lon'])),
+                icon: pr_icon,
+                infoWindow: InfoWindow(
+                  title: jsondata[i]['business_name'],
+                ),
+                onTap: () {
+                  show_site(jsondata[i]['business_name']);
+                }));
+          }
+
           if (jsondata[i]['category'].toString() == "event") {
             _myMarkers.add(Marker(
                 markerId: MarkerId("marker_" + i.toString()),
@@ -506,21 +534,23 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
   }
 
   void SetCustomMarker() async {
-    bool isIOS = Platform.isIOS;
     acopio_icon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(24,24)), 'assets/images/acopio_icon' + (isIOS ? '' : '2x') + '.png');
+        ImageConfiguration(), 'assets/images/acopio_icon.png');
 
     reparacion_icon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(24,24)), 'assets/images/reparacion_icon' + (isIOS ? '' : '2x') + '.png');
+        ImageConfiguration(), 'assets/images/reparacion_icon.png');
 
     mantenimiento_icon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(24,24)), 'assets/images/mantenimiento_icon' + (isIOS ? '' : '2x') + '.png');
+        ImageConfiguration(), 'assets/images/mantenimiento_icon.png');
 
     oficial_icon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(24,24)), 'assets/images/oficial_icon' + (isIOS ? '' : '2x') + '.png');
+        ImageConfiguration(), 'assets/images/oficial_icon.png');
+
+    pr_icon = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(), 'assets/images/pr_icon.png');
 
     evento_icon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(24,24)), 'assets/images/evento_icon' + (isIOS ? '' : '2x') + '.png');
+        ImageConfiguration(), 'assets/images/evento_icon.png');
   }
 
   void moveCameraPosition() async {
@@ -1266,6 +1296,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
       centroAcopio = "Centro de acopio",
       centroReparacion = "Centro de reparación",
       sitioMantenimiento = "Sitio de mantenimiento",
+      puntoRetorno = "Punto de Retorno",
       //sitioDispocisionOficial = "Sitio de disposición oficial",
       eventos = "Eventos";
 
@@ -1277,6 +1308,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
     CategoriesModel(centroAcopio, false),
     CategoriesModel(centroReparacion, false),
     CategoriesModel(sitioMantenimiento, false),
+    CategoriesModel(puntoRetorno, false),
     //CategoriesModel(sitioDispocisionOficial, false),
     CategoriesModel(eventos, false)
   ];
@@ -1480,6 +1512,9 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
         break;
       case sitioMantenimiento:
         asset = "assets/images/icon_mantenimiento.png";
+        break;
+      case puntoRetorno:
+        asset = "assets/images/icon_pr.png";
         break;
       /*case sitioDispocisionOficial:
         asset = "assets/images/icon_oficial.png";
