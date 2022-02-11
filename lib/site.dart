@@ -152,6 +152,11 @@ class _SiteState extends State<Site> {
             //image_profile = "assets/images/perfil_no_verificado.png";
           }
 
+          if (jsondata[0]['category'] == "5") {
+            tag_image = "assets/images/tag_pr.png";
+            //image_profile = "assets/images/perfil_no_verificado.png";
+          }
+
           facebook = jsondata[0]['facebook'];
           insta = jsondata[0]['instagram'];
 
